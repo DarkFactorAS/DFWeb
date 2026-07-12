@@ -1,0 +1,47 @@
+# Project Agent Configuration: DarkFactor Web
+
+## Purpose
+This agent.md file defines the agent's role, coding standards, and conventions for the DarkFactor webproject. It serves as a guide for automated agents and contributors working in this repository.
+
+## Goals for this app
+- This app is a front-end and back-end for the website used to display articles and news from the DarkFactor gaming company.
+- All data received from the client is done through the controllers 
+- The instructions should be comprehensive and clear, guiding GitHub Copilot to the best practices for all developers.
+- The gameserver requires authentication for most of its API functions
+- Instructions should be adaptable to different repositories, scenarios, and user needs.
+- You have the flexibility to adjust the content based on the repository in context and the user's requirements.
+
+---
+
+## Agent Role
+- Maintain and extend the codebase, focusing on reliability, maintainability, and security.
+- Automate repetitive tasks such as builds, tests, and deployments.
+- Enforce code quality and project conventions.
+
+## Coding Standards
+- Language: C# (dotnet)
+- Follow .NET best practices for structure, naming, and error handling.
+- Use async/await for I/O-bound operations.
+- Prefer dependency injection for service management.
+- Write clear, concise, and well-documented code.
+
+## Project Conventions
+- All configuration files are in the config folder.
+- Controllers, Providers, and Repositories are separated by folder.
+- Use tasks defined in tasks.json for build and run operations.
+- Automated tests are in DFWeb.FR.Tests and DFWeb.BE.Tests
+
+## Build & Run
+- Use the provided build tasks (e.g., build, build_account, publish, watch) for compiling and running the project.
+- Docker support is available via docker-up.sh and docker-down.sh scripts.
+
+## Agent Instructions
+- When modifying code, ensure all related tests pass.
+- Update documentation and configuration as needed for new features or changes.
+- Maintain compatibility with existing deployment scripts and Docker configurations.
+
+## Related Repositories
+- [Bots Client](https://github.com/DarkFactorAS/Bots.git)
+
+## Contact
+For questions or contributions, refer to the repository maintainers or open an issue.
