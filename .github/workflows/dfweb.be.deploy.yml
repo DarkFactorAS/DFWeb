@@ -1,0 +1,57 @@
+#
+# Build Deploy file for Docker container
+# Change the variables in this section to match your project
+#
+
+name: DFWeb Back-end - Deploy
+
+defaults:
+  run:
+    working-directory: .
+
+on:
+  release:
+    types: [published]
+
+  pull_request:
+    types: [closed]
+    branches: ["master", "main"]
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+
+  staging:
+    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
+    name: Deploy to Staging
+    uses: .github/workflows/infrastructure-server-deploy.yml
+    with:
+      environment: staging
+      project_path: "DFWeb.BE"
+      project_name: "DFWeb.BE"
+      config_settings: "accountserver"
+      versionfile: "Program.cs"
+    secrets: inherit
+
+  production:
+    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
+    name: Deploy to Production
+    needs: [staging]
+    uses: .github/workflows/infrastructure-server-deploy.yml
+    with:
+      environment: production
+      project_path: "DFWeb.BE"
+      project_name: "DFWeb.BE"
+      config_settings: "accountserver"
+      versionfile: "Program.cs"
+    secrets: inherit
+
