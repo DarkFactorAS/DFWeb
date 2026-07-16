@@ -1,4 +1,4 @@
-name: DarkFactor Web Back-end - CI Docker Container
+name: DFWeb Back-end - CI Docker Container
 
 on:
   push:

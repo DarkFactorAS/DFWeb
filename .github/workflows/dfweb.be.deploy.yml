@@ -36,10 +36,9 @@ jobs:
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.3
     with:
       environment: staging
-      project_path: "DFWeb.BE"
-      project_name: "DFWeb.BE"
-      config_settings: "accountserver"
-      versionfile: "Program.cs"
+      project_name: "DFWeb.FR.BootStrap"
+      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
+      versionfile: "DFWeb.FR.BootStrap/Program.cs"
     secrets: inherit
 
   production:
@@ -49,9 +48,8 @@ jobs:
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.3
     with:
       environment: production
-      project_path: "DFWeb.BE"
-      project_name: "DFWeb.BE"
-      config_settings: "accountserver"
-      versionfile: "Program.cs"
+      project_name: "DFWeb.FR.BootStrap"
+      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
+      versionfile: "DFWeb.FR.BootStrap/Program.cs"
     secrets: inherit
 
