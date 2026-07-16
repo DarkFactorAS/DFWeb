@@ -13,4 +13,5 @@ jobs:
     uses: ./.github/workflows/infrastructure-server-ci.yml
     with:
       project_name: "DFWeb.FR.Bootstrap"
+      dockerfile: "DFWeb.FR.Bootstrap/Dockerfile"
     secrets: inherit
