@@ -32,8 +32,26 @@ services:
     ports:
       - 4002:3306
 
-  dfweb:
-    container_name: darkfactorweb_web
+
+  dfweb_bootstrap:
+    container_name: darkfactorweb_web_bootstrap
+    build:
+      network: host
+      context: ./
+      dockerfile: ./DFWeb.FR.BootStrap/Dockerfile
+      args:
+        username: ${NUGET_USERNAME}
+        token: ${NUGET_TOKEN}
+      secrets:
+        - nuget_username
+        - nuget_token
+    ports:
+      - "4000:80"
+    networks:
+      - net_dfweb_backend
+
+  dfweb_tailwind:
+    container_name: darkfactorweb_web_tailwind
     build:
       network: host
       context: ./
@@ -42,10 +60,8 @@ services:
         username: ${NUGET_USERNAME}
         token: ${NUGET_TOKEN}
     ports:
-      - "4000:80"
-    networks:
+      - "4003:80"
       - net_dfweb_backend
-
     depends_on: 
       - dfwebdb
 
@@ -57,3 +73,9 @@ volumes:
   # docker volume create darkfactorweb-mariadb
   darkfactorweb-mariadb:
     external: true  
+
+secrets:
+  nuget_username:
+    environment: NUGET_USERNAME
+  nuget_token:
+    environment: NUGET_TOKEN
