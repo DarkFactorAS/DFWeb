@@ -12,6 +12,5 @@ jobs:
     name: Build Docker Image
     uses: ./.github/workflows/infrastructure-server-ci.yml
     with:
-      project_path: "DFWeb.FR.Bootstrap"
       project_name: "DFWeb.FR.Bootstrap"
     secrets: inherit
