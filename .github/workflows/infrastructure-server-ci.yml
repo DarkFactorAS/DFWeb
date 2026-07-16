@@ -52,8 +52,11 @@ jobs:
     # Verify required secrets and variables are set
     #
     - name: Verify secrets and variables are set
+      env:
+        NUGET_USERNAME: ${{ secrets.NUGET_USERNAME }}
+        NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
       run: |
-        if [ -z "${{ secrets.NUGET_USERNAME }}" ] || [ -z "${{ secrets.NUGET_TOKEN }}" ]; then
+        if [ -z "${NUGET_USERNAME:-}" ] || [ -z "${NUGET_TOKEN:-}" ]; then
           echo "One or more required secrets are not set. Please check the organization secrets."
           exit 1
         fi
