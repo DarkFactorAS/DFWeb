@@ -2,16 +2,18 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /app
 
-ARG username
-ARG token
-ENV NUGET_USERNAME $username
-ENV NUGET_TOKEN $token
-
 # Copy everything else
 COPY . .
 
+# Restore and build web with NuGet secrets
+RUN --mount=type=secret,id=nuget_username \
+    --mount=type=secret,id=nuget_token \
+    export NUGET_USERNAME=$(cat /run/secrets/nuget_username) && \
+    export NUGET_TOKEN=$(cat /run/secrets/nuget_token) && \
+    dotnet restore ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configfile ./DFWeb.FR.BootStrap/NuGet.config
+
 # Restore dependencies
-RUN dotnet restore ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configfile ./DFWeb.FR.BootStrap/NuGet.config
+#RUN dotnet restore ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configfile ./DFWeb.FR.BootStrap/NuGet.config
 
 # Build solution
 RUN dotnet publish ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj -c Release -o out --no-restore
