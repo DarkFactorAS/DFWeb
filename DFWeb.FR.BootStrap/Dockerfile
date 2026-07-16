@@ -1,4 +1,4 @@
-﻿# Use .Net Core 3.1 image
+# syntax=docker/dockerfile:1
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /app
 
