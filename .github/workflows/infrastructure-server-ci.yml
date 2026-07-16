@@ -1,0 +1,92 @@
+#
+# Build CI file for Docker container
+#
+
+#
+# Common variables and secrets
+#   Organization:
+#     secrets.NUGET_USERNAME
+#     secrets.NUGET_TOKEN
+#
+
+name: General - Server Container CI
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: .
+
+on:
+  workflow_call:
+    inputs:
+      project_path:
+        required: false
+        default: "."
+        type: string
+      project_name:
+        required: true
+        type: string
+      dockerfile:
+        required: false
+        default: "Dockerfile"
+        type: string
+
+jobs:
+  build:
+
+    # Timeout for the job
+    timeout-minutes: 15
+
+    # Static variables used in the workflow
+    env:
+      TIMESTAMP: ${{ github.sha }}
+     
+    # To build on the local server
+    runs-on: ubuntu-latest
+
+    steps:
+
+    #
+    # Verify required secrets and variables are set
+    #
+    - name: Verify secrets and variables are set
+      env:
+        NUGET_USERNAME: ${{ secrets.NUGET_USERNAME }}
+        NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      run: |
+        if [ -z "${NUGET_USERNAME:-}" ] || [ -z "${NUGET_TOKEN:-}" ]; then
+          echo "One or more required secrets are not set. Please check the organization secrets."
+          exit 1
+        fi
+        
+    - name: Convert project name to lowercase for Docker name
+      id: convert_to_lowercase
+      run: |
+        UPPERCASE_VAR="${{ inputs.project_name }}"
+        DOCKER_NAME="${UPPERCASE_VAR,,}" # The ,, converts to lowercase
+        echo "DOCKER_NAME=$DOCKER_NAME" >> $GITHUB_OUTPUT
+
+    - name: Checkout repository
+      uses: actions/checkout@v4      
+
+    # Build the image using BuildKit secrets for better security
+    # Note: Dockerfiles must use secret mounts instead of build args:
+    #   RUN --mount=type=secret,id=nuget_username \
+    #       --mount=type=secret,id=nuget_token \
+    #       NUGET_USERNAME=$(cat /run/secrets/nuget_username) \
+    #       NUGET_TOKEN=$(cat /run/secrets/nuget_token) \
+    #       dotnet restore --source "https://nuget.pkg.github.com/YOUR_ORG/index.json"
+    - name: Build Docker image
+      env:
+        DOCKER_BUILDKIT: 1
+        NUGET_USERNAME: ${{ secrets.NUGET_USERNAME }}
+        NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      run: |
+        docker build . \
+          --file ${{ inputs.project_path }}/${{ inputs.dockerfile }} \
+          --tag ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }}-ci-image:${{ env.TIMESTAMP }} \
+          --secret id=nuget_username,env=NUGET_USERNAME \
+          --secret id=nuget_token,env=NUGET_TOKEN
+

@@ -1,4 +1,3 @@
-version: '3.6'
 services:
 
   dfwebadmin:
@@ -60,7 +59,8 @@ services:
         username: ${NUGET_USERNAME}
         token: ${NUGET_TOKEN}
     ports:
-      - "4003:80"
+      - "4003:80"
+    networks:
       - net_dfweb_backend
     depends_on: 
       - dfwebdb
