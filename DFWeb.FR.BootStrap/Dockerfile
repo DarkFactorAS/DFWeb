@@ -1,5 +1,5 @@
 ﻿# Use .Net Core 3.1 image
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /app
 
 ARG username
@@ -7,22 +7,20 @@ ARG token
 ENV NUGET_USERNAME $username
 ENV NUGET_TOKEN $token
 
-# Copy csproj and restore as distinct layers
-COPY ./DarkFactorWeb/*.csproj ./
-COPY ./DarkFactorWeb/NuGet.config ./
-RUN dotnet restore
-
 # Copy everything else
-COPY ./DarkFactorWeb/ ./
+COPY . .
+
+# Restore dependencies
+RUN dotnet restore ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configfile ./DFWeb.FR.BootStrap/NuGet.config
 
 # Build solution
-RUN dotnet publish DarkFactorCoreNet.csproj -c Release -o out
+RUN dotnet publish ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj -c Release -o out --no-restore
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "DarkFactorCoreNet.dll"]
+ENTRYPOINT ["dotnet", "DFWeb.FR.BootStrap.dll"]
 
 EXPOSE 5000
 
