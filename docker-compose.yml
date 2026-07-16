@@ -60,8 +60,7 @@ services:
         username: ${NUGET_USERNAME}
         token: ${NUGET_TOKEN}
     ports:
-      - "4000:80"
-    networks:
+      - "4003:80"
       - net_dfweb_backend
     depends_on: 
       - dfwebdb
