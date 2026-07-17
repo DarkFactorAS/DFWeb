@@ -21,7 +21,7 @@
             "Microsoft.EntityFrameworkCore": "Warning"
         }
     },
-    "AppName": "BotServer",
+    "AppName": "DFWeb",
     "DatabaseConnection": {
         "Server": "localhost",
         "Port": "5306",
