@@ -45,7 +45,7 @@
 #
 
 {
-    "AppName": "BotServer",
+    "AppName": "DFWeb",
     "DatabaseConnection": {
         "Server": "host.docker.internal",
         "Port": "5306",
