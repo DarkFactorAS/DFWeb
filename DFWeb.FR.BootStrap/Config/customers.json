@@ -9,7 +9,9 @@
               "ConnectionString": "Server=host.docker.internal;Port=4002;Database=dfweb;Uid=webuser;Pwd=secretpwd;SslMode=Preferred;"
             }
           ],
-          "AccountServer" : "http://localhost:5100"        
+          "AccountServer": {
+            "Endpoint": "http://localhost:5100"
+          }
         }
       ]
     }
