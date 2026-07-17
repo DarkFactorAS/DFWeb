@@ -44,6 +44,9 @@ services:
       secrets:
         - nuget_username
         - nuget_token
+    environment:
+      - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
+      - ASPNETCORE_URLS=http://+:80
     ports:
       - "4000:80"
     networks:
