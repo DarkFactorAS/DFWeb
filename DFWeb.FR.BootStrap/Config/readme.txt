@@ -2,7 +2,7 @@
 # Readme
 #
 
-# This file shows example on how to set up localhost natively and in docker container
+# This file shows an example of how to set up localhost natively and in a Docker container
 
 # Create two files
 * appsettings.Development.json
