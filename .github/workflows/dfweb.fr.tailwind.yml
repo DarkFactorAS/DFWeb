@@ -28,6 +28,9 @@ on:
           - staging
           - production
 
+permissions:
+  contents: read
+
 jobs:
 
   staging:
@@ -56,4 +59,3 @@ jobs:
       versionfile: "DFWeb.FR.Tailwind/Program.cs"
       config_path: "/DFWeb.FR.Tailwind"
     secrets: inherit
-
