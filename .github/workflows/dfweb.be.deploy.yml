@@ -3,7 +3,7 @@
 # Change the variables in this section to match your project
 #
 
-name: DFWeb Back-end - Deploy
+name: DFWeb BootStrap - Deploy
 
 defaults:
   run:
@@ -33,9 +33,10 @@ jobs:
   staging:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Deploy to Staging
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.5
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.6
     with:
       environment: staging
+      external_port: 8500
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
       versionfile: "DFWeb.FR.BootStrap/Program.cs"
@@ -46,9 +47,10 @@ jobs:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
     needs: [staging]
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.5
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.6
     with:
       environment: production
+      external_port: 9500
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
       versionfile: "DFWeb.FR.BootStrap/Program.cs"
