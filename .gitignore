@@ -15,7 +15,8 @@ package-lock.json
 
 .DS_Store
 
-appsettings.*.json*
+appsettings.Development.json
+appsettings.DevelopmentDocker.json
 
 # ========================= #
 # Automated tests (Postman) #
