@@ -9,41 +9,43 @@
 
 <div>
     <div class="row" id="menu">
-        <div class="col-md-12">
+        <div class="col-12">
             @await Html.PartialAsync("Views/TopElements/TopMenu.cshtml", Model)
         </div>
     </div>
+
     <div class="row" id="navigation">
-        <div class="col-md-12">
+        <div class="col-12">
             @await Html.PartialAsync("Views/TopElements/TopNavigation.cshtml", Model)
         </div>
     </div>
 
     <div class="row" id="mainblock">
-
-        <div class="col-lg-8">
-        <div class="row" id="mainLeftblock" >
-        @foreach (var relPage in Model.mainPageItems.Take(1))
-        {
-            <div class="col-sm-12 mb-4">
-                @await Html.PartialAsync("Views/Components/TeaserArticleMedium.cshtml", relPage)
+        <div class="col-lg-8" id="articleblock">
+            <div class="row">
+                @foreach (var relPage in Model.mainPageItems.Take(1))
+                {
+                    <div class="col-12 mb-4">
+                        @await Html.PartialAsync("Views/Components/TeaserArticleMedium.cshtml", relPage)
+                    </div>
+                }
+                @* Show remaining articles:
+                    - Small screen: 2 articles on page (sm-6)
+                    - Large screen: 3 articles on page (lg-4) 
+                *@
+                @foreach (var relPage in Model.mainPageItems.Skip(1))
+                {
+                    <div class="col-sm-6 mb-4">
+                        @await Html.PartialAsync("Views/Components/TeaserArticleSmall.cshtml", relPage)
+                    </div>
+                }
             </div>
-        }
-        @* Show remaining articles:
-            - Small screen: 2 articles on page (sm-6)
-            - Large screen: 3 articles on page (lg-4) 
-        *@
-        @foreach (var relPage in Model.mainPageItems.Skip(1))
-        {
-            <div class="col-sm-6 mb-4">
-                @await Html.PartialAsync("Views/Components/TeaserArticleSmall.cshtml", relPage)
-            </div>
-        }
-        </div>
         </div>
 
-        @* Display related articles on the side ( in full desktop screen view ) *@
-        @await Html.PartialAsync("Views/Components/RelatedArticleSmall.cshtml", Model.relatedPages)
+        <div class="col-lg-4 d-none d-lg-block" id="relatedblock">
+            @* Display related articles on the side ( in full desktop screen view ) *@
+            @await Html.PartialAsync("Views/Components/RelatedArticleSmall.cshtml", Model.relatedPages)
+        </div>
 
     </div>
 
