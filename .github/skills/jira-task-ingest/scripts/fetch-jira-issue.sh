@@ -7,6 +7,10 @@ if [[ $# -lt 1 ]]; then
 fi
 
 ISSUE_KEY="$1"
+if [[ ! "${ISSUE_KEY}" =~ ^[A-Z][A-Z0-9_]*-[0-9]+$ ]]; then
+  echo "Invalid ISSUE_KEY format: ${ISSUE_KEY} (expected e.g. ABC-123)" >&2
+  exit 1
+fi
 OUTPUT_FILE="${2:-}"
 
 required_vars=(JIRA_BASE_URL JIRA_EMAIL JIRA_API_TOKEN)
