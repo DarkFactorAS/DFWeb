@@ -58,11 +58,14 @@ services:
       network: host
       context: ./
       dockerfile: ./DFWeb.FR.Tailwind/Dockerfile
-      args:
-        username: ${NUGET_USERNAME}
-        token: ${NUGET_TOKEN}
+      secrets:
+        - nuget_username
+        - nuget_token
+    environment:
+      - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
+      - ASPNETCORE_URLS=http://+:80
     ports:
-      - "4003:80"
+      - "4005:80"
     networks:
       - net_dfweb_backend
     depends_on: 
