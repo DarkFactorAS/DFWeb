@@ -36,7 +36,7 @@ jobs:
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.6
     with:
       environment: staging
-      external_port: 4006
+      external_port: 8600
       project_name: "DFWeb.FR.Tailwind"
       dockerfile: "DFWeb.FR.Tailwind/Dockerfile"
       versionfile: "DFWeb.FR.Tailwind/Program.cs"
@@ -50,7 +50,7 @@ jobs:
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.6
     with:
       environment: production
-      external_port: 4106
+      external_port: 9600
       project_name: "DFWeb.FR.Tailwind"
       dockerfile: "DFWeb.FR.Tailwind/Dockerfile"
       versionfile: "DFWeb.FR.Tailwind/Program.cs"

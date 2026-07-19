@@ -36,7 +36,7 @@ jobs:
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.6
     with:
       environment: staging
-      external_port: 4005
+      external_port: 8500
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
       versionfile: "DFWeb.FR.BootStrap/Program.cs"
@@ -50,7 +50,7 @@ jobs:
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.6
     with:
       environment: production
-      external_port: 4105
+      external_port: 9500
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
       versionfile: "DFWeb.FR.BootStrap/Program.cs"
