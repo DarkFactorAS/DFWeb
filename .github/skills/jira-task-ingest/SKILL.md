@@ -19,6 +19,7 @@ Use this skill when the user wants to pull details from a Jira issue and turn th
 - Jira account email
 - Jira API token
 - Jira issue key, for example JIRA-123
+- jq (required by ./scripts/jira-json-to-agent-todos.sh)
 
 Set credentials as environment variables in terminal:
 
