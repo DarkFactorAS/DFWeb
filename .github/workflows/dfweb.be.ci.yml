@@ -1,4 +1,4 @@
-name: DFWeb Back-end - CI Docker Container
+name: DFWeb BootStrap - CI Docker Container
 
 on:
   push:
@@ -10,7 +10,7 @@ env:
 jobs:
   build:
     name: Build Docker Image
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-ci.yml@v1.4
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-ci.yml@v1.6
     with:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
