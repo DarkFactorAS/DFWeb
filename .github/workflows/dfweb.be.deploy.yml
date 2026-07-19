@@ -33,23 +33,25 @@ jobs:
   staging:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Deploy to Staging
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.3
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.5
     with:
       environment: staging
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
       versionfile: "DFWeb.FR.BootStrap/Program.cs"
+      config_path: "/DFWeb.FR.BootStrap"
     secrets: inherit
 
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
     needs: [staging]
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.3
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.5
     with:
       environment: production
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
       versionfile: "DFWeb.FR.BootStrap/Program.cs"
+      config_path: "/DFWeb.FR.BootStrap"
     secrets: inherit
 
