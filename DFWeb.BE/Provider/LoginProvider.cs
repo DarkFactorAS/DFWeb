@@ -35,6 +35,8 @@ namespace DFWeb.BE.Provider
         ICookieProvider _cookieProvider;
 
         const string COOKIE_NAME = "DFToken";
+        const string RESET_EMAIL_COOKIE = "DFResetEmail";
+        const string RESET_TOKEN_COOKIE = "DFResetToken";
 
         public LoginProvider(IUserSessionProvider userSession, 
                             IAccountClient accountClient,
@@ -47,10 +49,15 @@ namespace DFWeb.BE.Provider
             _cookieProvider = cookieProvider;
 
             IConfigurationHelper configuration = DFServices.GetService<IConfigurationHelper>();
-            var customer = configuration.GetFirstCustomer() as WebConfig;
+            var customer = configuration.Settings as WebConfig;
             if ( customer != null )
             {
-                _accountClient.SetEndpoint(customer.AccountServer);
+                var endpoint = customer.AccountServer?.Endpoint;
+                if (string.IsNullOrEmpty(endpoint))
+                {
+                    throw new InvalidOperationException("AccountServer.Endpoint is not configured. Please set a valid endpoint in the customer configuration.");
+                }
+                _accountClient.SetEndpoint(endpoint);
             }
         }
 
@@ -142,17 +149,37 @@ namespace DFWeb.BE.Provider
 
         public ReturnData ResetPasswordWithEmail(string email)
         {
-            return _accountClient.ResetPasswordWithEmail(email);
+            _cookieProvider.RemoveCookie(RESET_TOKEN_COOKIE);
+
+            var response = _accountClient.ResetPasswordWithEmail(email);
+            if (response != null && response.errorCode == (int)ReturnData.ReturnCode.OK)
+            {
+                _cookieProvider.SetCookie(RESET_EMAIL_COOKIE, email);
+            }
+            return response;
         }
 
         public ReturnData ResetPasswordWithCode(string code)
         {
-            return _accountClient.ResetPasswordWithCode(code);
+            var email = _cookieProvider.GetCookie(RESET_EMAIL_COOKIE);
+            var response = _accountClient.ResetPasswordWithCode(code, email);
+            if (response != null && response.errorCode == (int)ReturnData.ReturnCode.OK)
+            {
+                _cookieProvider.SetCookie(RESET_TOKEN_COOKIE, response.message);
+            }
+            return response;
         }
 
         public ReturnData ResetPasswordWithToken(string password)
         {
-            return _accountClient.ResetPasswordWithToken(password);
+            var token = _cookieProvider.GetCookie(RESET_TOKEN_COOKIE);
+            var response = _accountClient.ResetPasswordWithToken(token, password);
+            if (response != null && response.errorCode == (int)ReturnData.ReturnCode.OK)
+            {
+                _cookieProvider.RemoveCookie(RESET_EMAIL_COOKIE);
+                _cookieProvider.RemoveCookie(RESET_TOKEN_COOKIE);
+            }
+            return response;
         }
     }
 }

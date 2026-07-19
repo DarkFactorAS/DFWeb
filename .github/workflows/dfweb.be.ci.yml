@@ -1,0 +1,17 @@
+name: DFWeb BootStrap - CI Docker Container
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: darkfactorwebimage
+
+jobs:
+  build:
+    name: Build Docker Image
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-ci.yml@v1.6
+    with:
+      project_name: "DFWeb.FR.BootStrap"
+      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
+    secrets: inherit

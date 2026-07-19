@@ -58,7 +58,7 @@ namespace DFWeb.BE.Api
         public IActionResult ChangePassStep1([FromForm] string email)
         {
             var ret = _loginProvider.ResetPasswordWithEmail(email);
-            if ( ret.code == ReturnData.ReturnCode.OK )
+            if ( ret.errorCode == (int)ReturnData.ReturnCode.OK )
             {
                 return Redirect("/Login/ChangePassStep2");
             }
@@ -70,7 +70,7 @@ namespace DFWeb.BE.Api
         public IActionResult ChangePassStep2([FromForm] string code)
         {
             var ret = _loginProvider.ResetPasswordWithCode(code);
-            if ( ret.code == ReturnData.ReturnCode.OK )
+            if ( ret.errorCode == (int)ReturnData.ReturnCode.OK )
             {
                 return Redirect("/Login/ChangePassStep3");
             }
@@ -87,7 +87,7 @@ namespace DFWeb.BE.Api
             }
 
             var ret = _loginProvider.ResetPasswordWithToken(password);
-            if ( ret.code == ReturnData.ReturnCode.OK )
+            if ( ret.errorCode == (int)ReturnData.ReturnCode.OK )
             {
                 _loginProvider.Logout();
 
