@@ -16,7 +16,7 @@
     {
         <div id="mainFeaturedBlock">
             <div class="mb-3">
-                <a href="/page?id=@Model.PageId"><img width=100% src="/api/Image/GetImage?imageId=@Model.ImageId" class="imagefit"></a>
+                <a href="/page?id=@Model.PageId"><img width=100% src="/api/Image/GetImage?imageId=@Model.ImageId" class="imagefit" alt="@Model.ContentTitle"></a>
             </div>
             <div>
                 <H1><a href="/page?id=@Model.PageId" class="article_title">@Model.ContentTitle</a></H1>
