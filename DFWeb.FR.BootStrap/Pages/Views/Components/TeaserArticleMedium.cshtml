@@ -14,14 +14,14 @@
 <div class = "article_featured">
     @if (Model.ImageId != 0)
     {
-        <div class="row" id="mainFeaturedBlock">
-            <div class="col-md-6">
+        <div id="mainFeaturedBlock">
+            <div class="mb-3">
+                <a href="/page?id=@Model.PageId"><img width=100% src="/api/Image/GetImage?imageId=@Model.ImageId" class="imagefit"></a>
+            </div>
+            <div>
                 <H1><a href="/page?id=@Model.PageId" class="article_title">@Model.ContentTitle</a></H1>
                 <B>@Model.LastUpdated | @FormatTags(Model.Tags)</B><BR>
                 <p class="article_promo">@Model.PromoText</p> <br />
-            </div>
-            <div class="col-md-6">
-                <a href="/page?id=@Model.PageId"><img width=100% height=100% src="/api/Image/GetImage?imageId=@Model.ImageId" class="imagefit" style="display:flex"></a>
             </div>
         </div>
     }
