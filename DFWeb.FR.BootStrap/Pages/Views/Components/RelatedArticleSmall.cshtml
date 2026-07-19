@@ -11,14 +11,6 @@
     }
 }
 
-@* 
-Hide Article Section list on the right side if we are on a medium or smaller screen
-<div class="d-lg-none">hide on screens wider than lg</div>
-<div class="d-none d-lg-block">hide on screens smaller than lg</div> 
-*@
-
-<div class="col-lg-4 d-none d-lg-block">
-
 @foreach (var relPage in Model)
 {
     <div class="article" style="padding-bottom:10px">
@@ -40,4 +32,3 @@ Hide Article Section list on the right side if we are on a medium or smaller scr
         </div>
     </div>
 }
-</div>
