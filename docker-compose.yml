@@ -58,9 +58,6 @@ services:
       network: host
       context: ./
       dockerfile: ./DFWeb.FR.Tailwind/Dockerfile
-      args:
-        username: ${NUGET_USERNAME}
-        token: ${NUGET_TOKEN}
       secrets:
         - nuget_username
         - nuget_token
