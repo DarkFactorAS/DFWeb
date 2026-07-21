@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger; 
@@ -49,9 +50,24 @@ namespace DarkFactorCoreNet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc( options =>
+            services.AddRazorPages();
+            
+            services.AddMvc(options =>
             {
                 options.EnableEndpointRouting = false;
+            });
+
+            services.Configure<RazorViewEngineOptions>(options =>
+            {
+                // Clear default view location formats and add custom ones for partials
+                options.ViewLocationFormats.Clear();
+                options.ViewLocationFormats.Add("/Pages/Shared/{0}.cshtml");
+                options.ViewLocationFormats.Add("/Pages/{0}.cshtml");
+                
+                // Also set up page view location formats for Razor Pages
+                options.PageViewLocationFormats.Clear();
+                options.PageViewLocationFormats.Add("/Pages/Shared/{0}.cshtml");
+                options.PageViewLocationFormats.Add("/Pages/{0}.cshtml");
             });
 
             services.AddSwaggerGen();

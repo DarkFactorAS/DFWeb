@@ -1,0 +1,24 @@
+@using DFWeb.BE.Models
+@model ArticleSectionModel
+
+<div style="width:100%">
+
+    @if ( Model.ImageId != 0 )
+    {
+        @* Show Image if we have data *@    
+        <div>
+            <center><a href="/Editor/ImageSelector?pageId=@Model.PageId&sectionId=@Model.ID"><img class="article_image" src="/api/Image/GetImage?imageId=@Model.ImageId"></a></center>
+        </div>        
+        <input type='hidden' id='ImageId_@Model.ID' value='@Model.ImageId'>
+    }
+    else
+    {
+        <input type='hidden' id='ImageId_@Model.ID' value='0'>
+
+        @* Show Add button to upload new image *@    
+        <div class="article" style="width:100%;padding:10px;align:center">
+            <a href="/Editor/ImageSelector?pageId=@Model.PageId&sectionId=@Model.ID" >Select Image</a>
+        </div>
+    }
+
+</div>

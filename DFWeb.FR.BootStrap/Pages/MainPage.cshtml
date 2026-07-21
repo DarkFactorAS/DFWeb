@@ -5,49 +5,53 @@
     ViewData["Title"] = Model.pageModel.ContentTitle;
 }
 
-<!-- https://getbootstrap.com/docs/4.0/layout/grid/ -->
+@section Navigation {
+    <ul class="navbar-nav ms-auto">
+        @await Html.PartialAsync("TopMenu", Model)
+    </ul>
+}
 
-<div>
-    <div class="row" id="menu">
-        <div class="col-12">
-            @await Html.PartialAsync("Views/TopElements/TopMenu.cshtml", Model)
-        </div>
+<!-- Breadcrumb Navigation -->
+<div class="row mb-4">
+    <div class="col-12">
+        @await Html.PartialAsync("TopNavigation", Model)
     </div>
+</div>
 
-    <div class="row" id="navigation">
-        <div class="col-12">
-            @await Html.PartialAsync("Views/TopElements/TopNavigation.cshtml", Model)
-        </div>
-    </div>
-
-    <div class="row" id="mainblock">
-        <div class="col-lg-8" id="articleblock">
-            <div class="row">
+<!-- Main Content Area -->
+<div class="row g-4">
+    <!-- Article Block -->
+    <div class="col-lg-8">
+        <!-- Featured Article -->
+        @if (Model.mainPageItems.Any())
+        {
+            <div class="row mb-4">
                 @foreach (var relPage in Model.mainPageItems.Take(1))
                 {
-                    <div class="col-12 mb-4">
-                        @await Html.PartialAsync("Views/Components/TeaserArticleMedium.cshtml", relPage)
-                    </div>
-                }
-                @* Show remaining articles:
-                    - Small screen: 2 articles on page (sm-6)
-                    - Large screen: 3 articles on page (lg-4) 
-                *@
-                @foreach (var relPage in Model.mainPageItems.Skip(1))
-                {
-                    <div class="col-sm-6 mb-4">
-                        @await Html.PartialAsync("Views/Components/TeaserArticleSmall.cshtml", relPage)
+                    <div class="col-12">
+                        @await Html.PartialAsync("TeaserArticleMedium", relPage)
                     </div>
                 }
             </div>
-        </div>
 
-        <div class="col-lg-4 d-none d-lg-block" id="relatedblock">
-            @* Display related articles on the side ( in full desktop screen view ) *@
-            @await Html.PartialAsync("Views/Components/RelatedArticleSmall.cshtml", Model.relatedPages)
-        </div>
-
+            <!-- Remaining Articles Grid -->
+            <div class="row g-4">
+                @foreach (var relPage in Model.mainPageItems.Skip(1))
+                {
+                    <div class="col-sm-6">
+                        @await Html.PartialAsync("TeaserArticleSmall", relPage)
+                    </div>
+                }
+            </div>
+        }
     </div>
 
+    <!-- Sidebar -->
+    <div class="col-lg-4 d-none d-lg-block">
+        <div class="sticky-top" style="top: 20px;">
+            @await Html.PartialAsync("RelatedArticleSmall", Model.relatedPages)
+        </div>
+    </div>
 </div>
+
 
