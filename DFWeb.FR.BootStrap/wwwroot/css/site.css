@@ -1,43 +1,123 @@
+/* ============================================
+   Bootstrap 5 Site Customizations
+   ============================================ */
+
 body {
-    padding-top: 50px;
-    padding-bottom: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
-/* Wrapping element */
-/* Set some basic padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 0;
+    padding-right: 0;
 }
 
-/* Carousel */
+/* Container Customizations */
+.container-lg {
+    max-width: 1200px;
+}
+
+/* Carousel Customizations */
+.carousel-caption {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    padding: 2rem 1rem 1rem;
+}
+
 .carousel-caption p {
-    font-size: 20px;
-    line-height: 1.4;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: white;
+    margin: 0.5rem 0;
 }
 
-/* Make .svg files in the carousel display properly in older browsers */
 .carousel-inner .item img[src$=".svg"] {
     width: 100%;
+    height: auto;
 }
 
-/* QR code generator */
+/* QR Code */
 #qrCode {
-    margin: 15px;
+    margin: 1.5rem auto;
+    display: block;
 }
 
-/* Hide/rearrange for smaller screens */
+/* Responsive Design */
 @media screen and (max-width: 767px) {
-    /* Hide captions */
     .carousel-caption {
         display: none;
     }
+    
+    .container-lg {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
+/* Divider Styling */
 hr.frontpage-jumbotron {
-    border: 0;
-    height: 1px;
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
-    align-content: center;
-  }
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.2), transparent);
+    margin: 3rem 0;
+}
+
+hr {
+    margin: 2rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Text Utilities */
+.text-center { text-align: center; }
+.text-start { text-align: left; }
+.text-end { text-align: right; }
+
+/* Spacing Utilities */
+.mx-auto { margin-left: auto; margin-right: auto; }
+.my-auto { margin-top: auto; margin-bottom: auto; }
+
+/* Flexible Layouts */
+.flex-column { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }
+.gap-4 { gap: 1.5rem; }
+
+/* Shadows */
+.box-shadow { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+
+/* Image Utilities */
+.img-responsive, .img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Display Utilities */
+.d-inline { display: inline; }
+.d-inline-block { display: inline-block; }
+.d-block { display: block; }
+.d-flex { display: flex; }
+.d-grid { display: grid; }
+
+/* Visibility */
+.d-none { display: none; }
+.d-sm-inline { display: inline; }
+.d-md-inline { display: inline; }
+.d-lg-inline { display: inline; }
+
+@media (min-width: 576px) {
+    .d-sm-none { display: none; }
+    .d-sm-block { display: block; }
+}
+
+@media (min-width: 768px) {
+    .d-md-none { display: none; }
+    .d-md-block { display: block; }
+}
+
+@media (min-width: 992px) {
+    .d-lg-none { display: none; }
+    .d-lg-block { display: block; }
+}
+
   

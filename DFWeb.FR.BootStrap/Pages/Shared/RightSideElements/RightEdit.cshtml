@@ -1,0 +1,66 @@
+@using DFWeb.BE.Models
+@model PageContentModel
+
+@{
+    var acl = new Dictionary<int, string>();
+    acl[0] = "Public";
+    acl[1] = "Member";
+    acl[2] = "Editor";
+    acl[3] = "Admin";    
+
+    var layout = new Dictionary<string, string>();
+    layout[""] = "Default";
+    layout["2x4"] = "2 x 4";
+    layout["1x8"] = "1 x 8";
+}
+
+<form  method='POST' style='display: inline;'>
+
+    <input type='hidden' name='ID' value='@Model.PageId'>
+    <input type='hidden' name='ParentId' value='@Model.ParentId'>
+    <input type='hidden' name='SortId' value='@Model.SortId'>
+    <input type='hidden' name='command' value='savePromo'>
+
+<div class="articletitle" style="width:100%">Properties</div>
+
+<div class="article" style="width:100%">
+
+    <div class='edit_header'>Layout</div>
+    <select name='layout' class='edit_input'>
+        @foreach (var layoutKv in layout)
+        {
+            <option value=@layoutKv.Key> @layoutKv.Value </option>
+        }
+    </select>
+
+    <br>
+
+    <div class='edit_header'>Access Control</div>
+    <select name='acl' class='edit_input'>
+        @foreach (var aclKv in acl)
+        {
+            if ( aclKv.Key == Model.Acl )
+            {
+                <option value=@aclKv.Key selected> @aclKv.Value </option>
+            }   
+            else
+            {
+                <option value=@aclKv.Key> @aclKv.Value </option>
+            }
+        }
+    </select>
+
+    <br>
+
+    <div class='edit_header'>Tags</div>
+    <input name='NewTag' type='text' class='edit_input' value=''>
+
+    <br>
+    <br>
+
+    <input class=toolbutton type='submit' value='Save'>
+
+</div>
+
+
+</form>

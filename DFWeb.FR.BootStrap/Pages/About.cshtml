@@ -3,7 +3,74 @@
 @{
     ViewData["Title"] = "About";
 }
-<h2>@ViewData["Title"]</h2>
-<h3>@Model.Message</h3>
 
-<p>Use this area to provide additional information.</p>
+@section Navigation {
+}
+
+<div class="row mb-5">
+    <div class="col-lg-8 offset-lg-2">
+        <header class="mb-5">
+            <h1 class="display-4 fw-bold mb-3">@ViewData["Title"]</h1>
+            <p class="lead text-muted">@Model.Message</p>
+        </header>
+
+        <article class="article_featured">
+            <p>
+                Welcome to DarkFactor. This page provides additional information about our services and platform.
+                Use this section to share your story, mission, or any important information with your visitors.
+            </p>
+            
+            <hr class="my-5">
+
+            <section class="mb-5">
+                <h2 class="mb-3">Our Mission</h2>
+                <p>
+                    We are committed to delivering exceptional content and services to our community.
+                    Our team works tirelessly to ensure the best possible experience for all users.
+                </p>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="mb-3">Why Choose Us</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-check-circle text-success"></i> Quality Content
+                                </h5>
+                                <p class="card-text">
+                                    We provide high-quality, carefully curated content that meets the highest standards.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-users text-primary"></i> Community Focused
+                                </h5>
+                                <p class="card-text">
+                                    Our community is at the heart of everything we do, and we prioritize their needs.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-3">Get in Touch</h2>
+                <p>
+                    Have questions or feedback? We'd love to hear from you. Feel free to reach out to our team
+                    for more information about our services.
+                </p>
+                <a href="/contact" class="btn btn-primary btn-lg">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+            </section>
+        </article>
+    </div>
+</div>
+

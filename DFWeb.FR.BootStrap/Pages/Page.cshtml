@@ -5,96 +5,122 @@
     ViewData["Title"] = Model.pageModel.ContentTitle;
 }
 
-<div>
-    <div class="row">
-        <div class="col-md-12">
-            @await Html.PartialAsync("Views/TopElements/TopMenu.cshtml", Model)
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            @await Html.PartialAsync("Views/TopElements/TopNavigation.cshtml", Model)
-        </div>
-    </div>
+@section Navigation {
+    <ul class="navbar-nav ms-auto">
+        @await Html.PartialAsync("TopMenu", Model)
+    </ul>
+}
 
-    <div class="row">
-        <div class="col-lg-8 col-md-8">
-            <div>
-                <div id="content_feature_@Model.PageId" class="article_featured">
-                    <div>
-                        <H2>@Model.pageModel.ContentTitle</H2>
-                    </div>
-                    <BR>
-                    <div>
-                        <i>@Model.pageModel.PromoText </i>
-                    </div>
-                    <BR>
-                    <div>
-                        @* Show Image if we have data *@    
-                        @if ( Model.pageModel.ImageId != 0 )
-                        {
-                            <div>
-                                &nbsp;
-                            </div>
-                            <div>
-                                <center><a href="/page?id=@Model.PageId"><img class="article_image" src="/api/Image/GetImage?imageId=@Model.pageModel.ImageId"></a></center>
-                            </div>        
-                        }
-                    </div>
-                    <BR>
-                    <div>
-                        @Model.pageModel.ContentText
-                    </div>
+<!-- Breadcrumb Navigation -->
+<div class="row mb-4">
+    <div class="col-12">
+        @await Html.PartialAsync("TopNavigation", Model)
+    </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="row g-4">
+    <!-- Main Article -->
+    <div class="col-lg-8">
+        <article id="content_feature_@Model.PageId" class="article_featured mb-4">
+            <header class="mb-4">
+                <h1 class="mb-3">@Model.pageModel.ContentTitle</h1>
+                <p class="lead text-muted">@Model.pageModel.PromoText</p>
+            </header>
+
+            <!-- Featured Image -->
+            @if (Model.pageModel.ImageId != 0)
+            {
+                <div class="mb-4">
+                    <a href="/page?id=@Model.PageId" class="d-block overflow-hidden rounded">
+                        <img class="article_image img-fluid" 
+                             src="/api/Image/GetImage?imageId=@Model.pageModel.ImageId"
+                             alt="@Model.pageModel.ContentTitle"
+                             style="transition: transform 0.3s ease;">
+                    </a>
                 </div>
+            }
 
-                @if ( Model.articleSections != null )
-                {
-                    @foreach (var articleSection in Model.articleSections)
+            <!-- Main Content -->
+            <div class="article-content">
+                @Model.pageModel.ContentText
+            </div>
+        </article>
+
+        <!-- Article Sections -->
+        @if (Model.articleSections != null && Model.articleSections.Any())
+        {
+            @foreach (var articleSection in Model.articleSections)
+            {
+                <section id="content_box_section_@(articleSection.ID)_layout_@articleSection.Layout" 
+                         class="article_section mb-4">
+                    
+                    @if (articleSection.Layout == 0)
                     {
-                        <div>
-                            &nbsp;
-                        </div>
-                        <div id="content_box_section_@(articleSection.ID)_layout_@articleSection.Layout" class="article_section">
-                            <BR>
-                            @if (articleSection.Layout == 0)
-                            {
-                                <div id="0 full" style="width:100%">@articleSection.Text</div>
-                            }
-                            else if (articleSection.Layout == 1 && articleSection.ImageId != 0)
-                            {
-                                <div id="1 full" style="width:100%"><center><img class="article_image" alt="@articleSection.ImageId" src="/api/Image/GetImage?imageId=@articleSection.ImageId"></center></div>
-                            }
-                            else if (articleSection.Layout == 2 && articleSection.ImageId != 0)
-                            {
-                                <div id="2_left" style="width:50%;margin-right:20px">@articleSection.Text</div>
-                                <div id="2_right" style="width:50%;margin-left:10px"><center><img class="article_image" alt="@articleSection.ImageId" src="/api/Image/GetImage?imageId=@articleSection.ImageId"></center></div>
-                            }
-                            else if (articleSection.Layout == 3 && articleSection.ImageId != 0)
-                            {
-                                <div id="3_left" style="width:50%;margin-right:10px"><center><img class="article_image" alt="@articleSection.ImageId" src="/api/Image/GetImage?imageId=@articleSection.ImageId"></center></div>
-                                <div id="3_right" style="width:50%;margin-left:20px">@articleSection.Text</div>
-                            }
-                            else
-                            {
-                                <center>Unknown layout</center>
-                            }
-                            <BR>
-                        </div>
-
-                        <div>
-                            &nbsp;
+                        <!-- Full Width Text -->
+                        <div class="article-content">
+                            @articleSection.Text
                         </div>
                     }
-                }
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-4" >
-            @await Html.PartialAsync("Views/RightSideElements/ArticleSection.cshtml", Model.relatedPages)
-        </div>
-
+                    else if (articleSection.Layout == 1 && articleSection.ImageId != 0)
+                    {
+                        <!-- Full Width Image -->
+                        <div class="overflow-hidden rounded mb-3">
+                            <img class="article_image img-fluid d-block" 
+                                 alt="@articleSection.ImageId" 
+                                 src="/api/Image/GetImage?imageId=@articleSection.ImageId"
+                                 style="transition: transform 0.3s ease;">
+                        </div>
+                    }
+                    else if (articleSection.Layout == 2 && articleSection.ImageId != 0)
+                    {
+                        <!-- Text Left, Image Right -->
+                        <div class="row g-4 align-items-center">
+                            <div class="col-lg-6">
+                                <div class="article-content">@articleSection.Text</div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="overflow-hidden rounded">
+                                    <img class="article_image img-fluid w-100" 
+                                         alt="@articleSection.ImageId" 
+                                         src="/api/Image/GetImage?imageId=@articleSection.ImageId"
+                                         style="transition: transform 0.3s ease;">
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (articleSection.Layout == 3 && articleSection.ImageId != 0)
+                    {
+                        <!-- Image Left, Text Right -->
+                        <div class="row g-4 align-items-center">
+                            <div class="col-lg-6">
+                                <div class="overflow-hidden rounded">
+                                    <img class="article_image img-fluid w-100" 
+                                         alt="@articleSection.ImageId" 
+                                         src="/api/Image/GetImage?imageId=@articleSection.ImageId"
+                                         style="transition: transform 0.3s ease;">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="article-content">@articleSection.Text</div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">Unknown layout type</div>
+                    }
+                </section>
+            }
+        }
     </div>
 
-
+    <!-- Sidebar -->
+    <div class="col-lg-4 d-none d-lg-block">
+        <div class="sticky-top" style="top: 20px;">
+            @await Html.PartialAsync("ArticleSection", Model.relatedPages)
+        </div>
+    </div>
 </div>
+
 

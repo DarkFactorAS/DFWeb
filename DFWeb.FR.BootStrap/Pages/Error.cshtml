@@ -4,20 +4,49 @@
     ViewData["Title"] = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="row mb-5">
+    <div class="col-lg-8 offset-lg-2 text-center">
+        <div class="error-container py-5">
+            <div class="mb-4">
+                <i class="fas fa-exclamation-triangle" style="font-size: 5rem; color: #e74c3c;"></i>
+            </div>
+            
+            <h1 class="display-4 fw-bold mb-3 text-danger">Error</h1>
+            <h2 class="h4 text-muted mb-4">An error occurred while processing your request.</h2>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+            @if (Model.ShowRequestId)
+            {
+                <div class="alert alert-info" role="alert">
+                    <strong>Request ID:</strong> 
+                    <code class="text-break">@Model.RequestId</code>
+                </div>
+            }
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>Development environment should not be enabled in deployed applications</strong>, as it can result in sensitive information from exceptions being displayed to end users. For local debugging, development environment can be enabled by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>, and restarting the application.
-</p>
+            <div class="alert alert-warning mt-4">
+                <h5 class="alert-heading mb-3">
+                    <i class="fas fa-info-circle"></i> Development Mode Information
+                </h5>
+                <p class="mb-2">
+                    To see more detailed error information, swap to the <strong>Development</strong> environment.
+                </p>
+                <p class="mb-0">
+                    <small>
+                        <strong>Note:</strong> Development environment should not be enabled in production applications,
+                        as it may expose sensitive information. Set the <strong>ASPNETCORE_ENVIRONMENT</strong> environment
+                        variable to <strong>Development</strong> for local debugging.
+                    </small>
+                </p>
+            </div>
+
+            <div class="mt-5">
+                <a href="/" class="btn btn-primary btn-lg me-2">
+                    <i class="fas fa-home"></i> Go Home
+                </a>
+                <button class="btn btn-outline-secondary btn-lg" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

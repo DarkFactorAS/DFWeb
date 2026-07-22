@@ -1,0 +1,38 @@
+@using DFWeb.BE.Models
+@model TeaserPageContentModel
+
+<div class="article" style="width:100%">
+
+    @if ( Model.ImageId != 0 )
+    {
+        @* Show delete icon to remove image *@    
+        @if ( Model.IsEdit )
+        {
+            <div style="width=100%;padding:2px;background-color:lightgray" >
+                <form  method='POST' action="/api/Image/DeleteImage" style='display: inline;'>
+                        <input type='hidden' name='pageId' value='@Model.PageId'>
+                        <input type='hidden' name='imageId' value='@Model.ImageId'>
+                        <input type='submit' value='X'>
+                </form>
+                @* Model.ImageModel.Filename *@
+            </div>
+        }
+
+        @* Show Image if we have data *@    
+        <div>
+            <center><a href="/page?id=@Model.PageId"><img width=100% height=100% src="/api/Image/GetImage?imageId=@Model.ImageId"></a></center>
+        </div>        
+    }
+
+    @* Show Add button to upload new image *@    
+    @if (Model.IsEdit)
+    {
+        <div class="article" style="width:100%;padding:10px;align:center">
+        <form  method='GET' action="/Editor/ImageSelector" style='display: inline;'>
+            <input type='hidden' name='pageId' value='@Model.PageId'>
+            <input type='submit' value='Select Image'>
+        </form>
+        </div>
+    }
+
+</div>

@@ -48,7 +48,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
       - ASPNETCORE_URLS=http://+:80
     ports:
-      - "4000:80"
+      - "4005:80"
     networks:
       - net_dfweb_backend
 
@@ -65,7 +65,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
       - ASPNETCORE_URLS=http://+:80
     ports:
-      - "4005:80"
+      - "4006:80"
     networks:
       - net_dfweb_backend
     depends_on: 
