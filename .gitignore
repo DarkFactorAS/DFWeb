@@ -7,10 +7,7 @@
 **/build
 **/.vs
 
-# Ignore Tailwind generated classes
 **/node_modules
-# tailwind_output.css
-#package.json
 package-lock.json
 
 .DS_Store

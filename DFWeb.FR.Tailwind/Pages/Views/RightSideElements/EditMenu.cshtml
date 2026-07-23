@@ -1,7 +1,0 @@
-﻿@using DFWeb.BE.Models
-@model List<MenuItem>
-
-    @foreach (var item in Model)
-    {
-        <div class="@item.MenuClass" style="margin-left: @(item.Width)px; padding-right:10px;"><a class=menutext href="/admin/preview?id=@item.ID">@item.Name</a></div>
-    }
