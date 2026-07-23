@@ -48,12 +48,13 @@ GH_SECRET_JIRA_API_TOKEN
 ## Procedure
 1. Resolve credentials from `JIRA_*` variables, or from cloud secret fallbacks when running in cloud.
 2. Fetch the Jira issue JSON with [fetch-jira-issue.sh](./scripts/fetch-jira-issue.sh).
-3. Extract implementation signals from the payload:
+3. Create a new branch for the Jira issue, for example `jira/JIRA-123`.
+4. Extract implementation signals from the payload:
    - Summary, description, acceptance criteria, links, subtasks
    - Priority, status, labels, components
-4. Convert fetched JSON into importable agent todos with [jira-json-to-agent-todos.sh](./scripts/jira-json-to-agent-todos.sh).
-5. Refine generated tasks using [agent-task-template.md](./assets/agent-task-template.md) when needed.
-6. Open or update the todo list with concise, action-oriented task titles.
+5. Convert fetched JSON into importable agent todos with [jira-json-to-agent-todos.sh](./scripts/jira-json-to-agent-todos.sh).
+6. Refine generated tasks using [agent-task-template.md](./assets/agent-task-template.md) when needed.
+7. Open or update the todo list with concise, action-oriented task titles.
 
 ## Quick Commands
 ```bash
