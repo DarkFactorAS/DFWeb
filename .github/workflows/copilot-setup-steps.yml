@@ -1,0 +1,33 @@
+name: Copilot Setup Steps
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+
+jobs:
+  copilot-setup-steps:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Validate Jira secrets are configured
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: |
+          test -n "$JIRA_BASE_URL"
+          test -n "$JIRA_EMAIL"
+          test -n "$JIRA_API_TOKEN"
+
+      - name: Export Jira credentials to Copilot environment
+        run: |
+          echo "JIRA_BASE_URL=${{ secrets.JIRA_BASE_URL }}" >> "$GITHUB_ENV"
+          echo "JIRA_EMAIL=${{ secrets.JIRA_EMAIL }}" >> "$GITHUB_ENV"
+          echo "JIRA_API_TOKEN=${{ secrets.JIRA_API_TOKEN }}" >> "$GITHUB_ENV"
