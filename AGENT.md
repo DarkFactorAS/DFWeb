@@ -2,7 +2,7 @@
 toolRestrictions: []
 maxParallelToolCalls: 20
 ---
-
+<!-- YAML front matter consumed by the agent runtime (configuration metadata). -->
 # Project Agent Configuration: DarkFactor Web
 
 ## Purpose
