@@ -1,3 +1,8 @@
+---
+toolRestrictions: []
+maxParallelToolCalls: 20
+---
+
 # Project Agent Configuration: DarkFactor Web
 
 ## Purpose
