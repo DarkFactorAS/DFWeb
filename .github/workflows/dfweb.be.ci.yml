@@ -2,6 +2,7 @@ name: DFWeb BootStrap - CI Docker Container
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -18,3 +19,30 @@ jobs:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
     secrets: inherit
+
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Configure DarkFactorAS NuGet source for tests
+        run: dotnet nuget update source DarkFactorAS --username ${{ vars.NUGET_USERNAME }} --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "DFWeb.BE/NuGet.config"
+
+      - name: Restore backend unit tests
+        run: dotnet restore DFWeb.BE.Tests/DFWeb.BE.Tests.csproj --configfile DFWeb.BE/NuGet.config
+
+      - name: Restore frontend unit tests
+        run: dotnet restore DFWeb.FR.Tests/DFWeb.FR.Tests.csproj --configfile DFWeb.BE/NuGet.config
+
+      - name: Run backend unit tests
+        run: dotnet test DFWeb.BE.Tests/DFWeb.BE.Tests.csproj --configuration Release --no-restore
+
+      - name: Run frontend unit tests
+        run: dotnet test DFWeb.FR.Tests/DFWeb.FR.Tests.csproj --configuration Release --no-restore
