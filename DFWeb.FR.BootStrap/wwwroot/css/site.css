@@ -120,4 +120,20 @@ hr {
     .d-lg-block { display: block; }
 }
 
+@media (max-width: 575.98px) {
+    .top-login-form {
+        align-items: stretch;
+    }
+
+    .top-login-input {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+
+    .top-login-button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
   
