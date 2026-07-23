@@ -2,6 +2,7 @@
 toolRestrictions: []
 maxParallelToolCalls: 20
 ---
+<!-- YAML front matter consumed by the agent runtime (configuration metadata). -->
 
 # Project Agent Configuration: DarkFactor Web
 
@@ -44,6 +45,13 @@ This agent.md file defines the agent's role, coding standards, and conventions f
 - When modifying code, ensure all related tests pass.
 - Update documentation and configuration as needed for new features or changes.
 - Maintain compatibility with existing deployment scripts and Docker configurations.
+
+## Git Workflow Requirements
+- At the start of every new session, create and switch to a new Git branch before making changes.
+- Use a descriptive branch name that reflects the session scope (for example: `session/feature-name` or `session/bugfix-name`).
+- If the `jira-task-ingest` skill is involved when starting a new session, name the branch after the Jira task and include the Jira key (for example: `session/DF-123-short-description`).
+- After each resolved action, commit the completed code to the current session branch with a clear commit message.
+- Continue committing incrementally after each resolved action rather than batching multiple completed actions into a single commit.
 
 ## Related Repositories
 - [Bots Client](https://github.com/DarkFactorAS/Bots.git)
