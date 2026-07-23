@@ -27,28 +27,6 @@
             }
         },
         {
-            "name": "DFWeb Tailwind Launch",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build_tailwind",
-            // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/DFWeb.FR.Tailwind/bin/Debug/net9.0/DFWeb.FR.Tailwind.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/DFWeb.FR.Tailwind",
-            "stopAtEntry": false,
-            // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"                
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/DFWeb.FR.Tailwind/Views"
-            }
-        },
-        {
             "name": "DFWeb Attach",
             "type": "coreclr",
             "request": "attach",

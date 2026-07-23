@@ -52,25 +52,6 @@ services:
     networks:
       - net_dfweb_backend
 
-  dfweb_tailwind:
-    container_name: darkfactorweb_web_tailwind
-    build:
-      network: host
-      context: ./
-      dockerfile: ./DFWeb.FR.Tailwind/Dockerfile
-      secrets:
-        - nuget_username
-        - nuget_token
-    environment:
-      - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
-      - ASPNETCORE_URLS=http://+:80
-    ports:
-      - "4006:80"
-    networks:
-      - net_dfweb_backend
-    depends_on: 
-      - dfwebdb
-
 networks:
   net_dfweb_backend:
     name: dfweb_backend
