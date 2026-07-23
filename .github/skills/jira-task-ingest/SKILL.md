@@ -29,8 +29,24 @@ export JIRA_EMAIL="your-email@company.com"
 export JIRA_API_TOKEN="your-api-token"
 ```
 
+If this skill runs from cloud (for example GitHub Actions or Codespaces), it also supports GitHub secret-style environment variable names as fallbacks when `JIRA_*` is not present:
+
+```bash
+GITHUB_SECRET_JIRA_BASE_URL
+GITHUB_SECRET_JIRA_EMAIL
+GITHUB_SECRET_JIRA_API_TOKEN
+```
+
+Also accepted in cloud mode:
+
+```bash
+GH_SECRET_JIRA_BASE_URL
+GH_SECRET_JIRA_EMAIL
+GH_SECRET_JIRA_API_TOKEN
+```
+
 ## Procedure
-1. Verify required environment variables exist.
+1. Resolve credentials from `JIRA_*` variables, or from cloud secret fallbacks when running in cloud.
 2. Fetch the Jira issue JSON with [fetch-jira-issue.sh](./scripts/fetch-jira-issue.sh).
 3. Extract implementation signals from the payload:
    - Summary, description, acceptance criteria, links, subtasks
