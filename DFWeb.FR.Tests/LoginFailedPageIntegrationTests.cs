@@ -28,6 +28,51 @@ public class LoginFailedPageIntegrationTests
         Assert.Contains("action=\"/api/Login/LoginUser\"", html);
     }
 
+    [Fact]
+    public async Task ChangePassStep1_RendersCorrectFormActionAndPreviousLink()
+    {
+        using var server = BuildServer();
+        using var client = server.CreateClient();
+
+        var response = await client.GetAsync("/Login/ChangePassStep1");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("action=\"/api/Login/ChangePassStep1\"", html);
+        Assert.Contains("href=\"/Login/LoginFailed\"", html);
+    }
+
+    [Fact]
+    public async Task ChangePassStep2_RendersCorrectFormActionAndPreviousLink()
+    {
+        using var server = BuildServer();
+        using var client = server.CreateClient();
+
+        var response = await client.GetAsync("/Login/ChangePassStep2");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("action=\"/api/Login/ChangePassStep2\"", html);
+        Assert.Contains("href=\"/Login/ChangePassStep1\"", html);
+    }
+
+    [Fact]
+    public async Task ChangePassStep3_RendersCorrectFormActionAndPreviousLink()
+    {
+        using var server = BuildServer();
+        using var client = server.CreateClient();
+
+        var response = await client.GetAsync("/Login/ChangePassStep3");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("action=\"/api/Login/ChangePassStep3\"", html);
+        Assert.Contains("href=\"/Login/ChangePassStep2\"", html);
+    }
+
     private static TestServer BuildServer()
     {
         var contentRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../DFWeb.FR.BootStrap"));
