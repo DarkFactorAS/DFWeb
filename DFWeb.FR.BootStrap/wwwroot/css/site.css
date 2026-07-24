@@ -136,4 +136,6 @@ hr {
     }
 }
 
-  
+@media (min-width: 992px) {
+    .w-lg-auto { width: auto !important; }
+}
