@@ -86,6 +86,8 @@ public class LoginFailedPageIntegrationTests
         var html = await response.Content.ReadAsStringAsync();
         Assert.Contains("<nav class=\"navbar navbar-expand-lg navbar-dark dfnavbg shadow-sm\">", html);
         Assert.Contains("href=\"/mainpage?id=1\"", html);
+        Assert.Contains("<ul class=\"navbar-nav ms-auto mb-2 mb-lg-0", html);
+        Assert.DoesNotContain("w-100 w-lg-auto", html);
     }
 
     private static TestServer BuildServer()

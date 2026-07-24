@@ -19,31 +19,38 @@
 
 @if (userInfo == null || userInfo.IsLoggedIn == false)
 {
-    <div class="d-flex ms-auto align-items-center w-100 w-lg-auto mt-3 mt-lg-0">
-        <a href="/Admin/Login" class="btn btn-primary btn-sm d-flex align-items-center gap-2 top-login-button">
-            <i class="fas fa-sign-in-alt"></i> Sign in
-        </a>
-    </div>
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item">
+            <a href="/Admin/Login" class="btn btn-primary btn-sm d-flex align-items-center gap-2 top-login-button">
+                <i class="fas fa-sign-in-alt"></i> Sign in
+            </a>
+        </li>
+    </ul>
 }
 else
 {
-    <div class="d-flex gap-3 ms-auto align-items-center">
-        <span class="text-white">Welcome <strong>@userInfo.Handle</strong></span>
-        
-        <form action="/api/Login/Logout" method="POST" class="d-inline">
-            <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-2" type="submit">
-                <i class="fas fa-sign-out-alt"></i> Sign out
-            </button>
-        </form>
+    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
+        <li class="nav-item">
+            <span class="navbar-text text-white">Welcome <strong>@userInfo.Handle</strong></span>
+        </li>
+        <li class="nav-item">
+            <form action="/api/Login/Logout" method="POST" class="d-inline">
+                <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-2" type="submit">
+                    <i class="fas fa-sign-out-alt"></i> Sign out
+                </button>
+            </form>
+        </li>
 
         @if (userInfo.UserAccessLevel >= (int)AccessLevel.Editor)
         {
-            <form action="@Model.EditUrl" method="GET" class="d-inline">
-                <input type="hidden" name="id" value="@Model.PageId" />
-                <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-2" type="submit">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
-            </form>
+            <li class="nav-item">
+                <form action="@Model.EditUrl" method="GET" class="d-inline">
+                    <input type="hidden" name="id" value="@Model.PageId" />
+                    <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-2" type="submit">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </form>
+            </li>
         }
-    </div>
+    </ul>
 }
