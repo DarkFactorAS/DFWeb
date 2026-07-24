@@ -13,16 +13,15 @@
         @if ( Model.IsEdit )
         {
             <div class="article" style="width:100%;padding:10px;">
-                    <form  method='POST' action="/api/Image/DeleteImage" style='display: inline;'>
-                            <input type='hidden' name='pageId' value='@Model.PageId'>
-                            <input type='hidden' name='imageId' value='@Model.ImageId'>
-                            <button type='submit' class="btn btn-primary btn-sm"><i class="fas fa-trash-alt me-1"></i>Remove Image</button>
-                    </form>
-                    <form  method='GET' action="/Editor/ImageSelector" style='display: inline;'>
-                        <input type='hidden' name='pageId' value='@Model.PageId'>
-                        <button type='submit' class="btn btn-primary btn-sm"><i class="fas fa-image me-1"></i>Select Image</button>
-                    </form>
-                </div>
+                <form  method='POST' action="/api/Image/DeleteImage" style='display: inline;'>
+                    <input type='hidden' name='pageId' value='@Model.PageId'>
+                    <input type='hidden' name='imageId' value='@Model.ImageId'>
+                    <button type='submit' class="btn btn-primary btn-sm"><i class="fas fa-trash-alt me-1"></i>Remove Image</button>
+                </form>
+                <form  method='GET' action="/Editor/ImageSelector" style='display: inline;'>
+                    <input type='hidden' name='pageId' value='@Model.PageId'>
+                    <button type='submit' class="btn btn-primary btn-sm"><i class="fas fa-image me-1"></i>Select Image</button>
+                </form>
             </div>
         }
     }
