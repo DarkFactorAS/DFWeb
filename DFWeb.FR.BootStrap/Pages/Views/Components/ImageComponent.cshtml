@@ -12,8 +12,7 @@
 
         @if ( Model.IsEdit )
         {
-            <div class="article" style="width:100%;padding:10px;align:center">
-                <div class="d-flex gap-2 flex-wrap justify-content-center">
+            <div class="article" style="width:100%;padding:10px;">
                     <form  method='POST' action="/api/Image/DeleteImage" style='display: inline;'>
                             <input type='hidden' name='pageId' value='@Model.PageId'>
                             <input type='hidden' name='imageId' value='@Model.ImageId'>
