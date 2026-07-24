@@ -73,6 +73,21 @@ public class LoginFailedPageIntegrationTests
         Assert.Contains("href=\"/Login/ChangePassStep2\"", html);
     }
 
+    [Fact]
+    public async Task EditPage_RendersTopMenuInNavigationSection()
+    {
+        using var server = BuildServer();
+        using var client = server.CreateClient();
+
+        var response = await client.GetAsync("/Editor/EditPage?id=1");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("<nav class=\"navbar navbar-expand-lg navbar-dark dfnavbg shadow-sm\">", html);
+        Assert.Contains("href=\"/mainpage?id=1\"", html);
+    }
+
     private static TestServer BuildServer()
     {
         var contentRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../DFWeb.FR.BootStrap"));
@@ -92,6 +107,7 @@ public class LoginFailedPageIntegrationTests
                 services.AddSingleton<IMenuProvider, FakeMenuProvider>();
                 services.AddSingleton<ILoginProvider, FakeLoginProvider>();
                 services.AddSingleton<IImageProvider, FakeImageProvider>();
+                services.AddSingleton<IEditPageProvider, FakeEditPageProvider>();
             })
             .Configure(app =>
             {
@@ -189,5 +205,38 @@ public class LoginFailedPageIntegrationTests
         public IList<ImageModel> GetImages(int imagesPrPage, int pageNumber) => new List<ImageModel>();
 
         public bool UpdateImage(int imageId, string filename) => false;
+    }
+
+    private sealed class FakeEditPageProvider : IEditPageProvider
+    {
+        public bool CreatePage(int pageId, string pageTitle) => false;
+
+        public bool SaveMainPage(PageContentModel mainPage) => false;
+
+        public bool CreateChildPage(int parentPageId, string pageTitle) => false;
+
+        public bool SaveFullPage(PageContentModel pageModel) => false;
+
+        public bool CreateArticleSection(int pageId, string title, string content) => false;
+
+        public bool UpdateArticleSection(ArticleSectionModel articleSectionModel) => false;
+
+        public bool DeleteArticleSection(ArticleSectionModel articleSectionModel) => false;
+
+        public bool ChangeSectionLayout(int articleId, int layout) => false;
+
+        public bool MovePageUp(TeaserPageContentModel page) => false;
+
+        public bool MovePageDown(TeaserPageContentModel page) => false;
+
+        public bool CanEditPage() => true;
+
+        public bool AddImage(int pageID, uint imageId) => false;
+
+        public bool AddImageToSection(int sectionId, uint imageId) => false;
+
+        public bool DeletePage(int pageId) => false;
+
+        public bool ChangeAccess(int pageId, int accessLevel) => false;
     }
 }
