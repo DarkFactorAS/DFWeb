@@ -44,8 +44,6 @@ namespace DarkFactorCoreNet
                 services.AddTransient<IConfigurationHelper, ConfigurationHelper<WebConfig> >();
 
 
-                services.AddSingleton(typeof(IEmailConfiguration), typeof(EmailConfiguration));
-
                 services.AddScoped(typeof(IMenuProvider), typeof(MenuProvider));
                 services.AddScoped(typeof(IPageProvider), typeof(PageProvider));
                 services.AddScoped(typeof(IEditPageProvider), typeof(EditPageProvider));
@@ -53,7 +51,6 @@ namespace DarkFactorCoreNet
 
                 services.AddScoped(typeof(ILoginProvider), typeof(LoginProvider));
                 services.AddScoped(typeof(IUserSessionProvider), typeof(UserSessionProvider));
-                services.AddScoped(typeof(IEmailProvider), typeof(EmailProvider));
                 services.AddScoped(typeof(IImageProvider), typeof(ImageProvider));
 
                 services.AddScoped(typeof(IMenuRepository), typeof(MenuRepository));

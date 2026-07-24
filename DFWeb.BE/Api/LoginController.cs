@@ -18,12 +18,10 @@ namespace DFWeb.BE.Api
     public class LoginController : ControllerBase
     {
         ILoginProvider _loginProvider;
-        IEmailProvider _emailProvider;
 
-        public LoginController(ILoginProvider loginProvider, IEmailProvider emailProvider)
+        public LoginController(ILoginProvider loginProvider)
         {
             _loginProvider = loginProvider;
-            _emailProvider = emailProvider;
         }
 
         [HttpPost]
