@@ -4,6 +4,7 @@ using DFWeb.BE.Provider;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AccountCommon.SharedModel;
+using DFCommonLib.Utils;
 using Xunit;
 
 namespace DFWeb.FR.Tests;
@@ -59,7 +60,46 @@ public class BootstrapPageModelTests
         var redirect = Assert.IsType<RedirectResult>(result);
         Assert.Equal("/", redirect.Url);
         Assert.Equal("thor", loginProvider.LastUsername);
-        Assert.Equal("secret", loginProvider.LastPassword);
+        Assert.Equal(DFCrypt.EncryptInput("secret"), loginProvider.LastPassword);
+    }
+
+    [Fact]
+    public void LoginModel_OnPostAsync_LoginFailure_RedirectsToLoginFailed()
+    {
+        var loginProvider = new FakeLoginProvider
+        {
+            LoginUserResult = AccountData.ErrorCode.WrongPassword
+        };
+        var model = new LoginModel(
+            loginProvider,
+            new FakePageProvider(),
+            new FakeMenuProvider(),
+            new FakeImageProvider());
+
+        var result = model.OnPostAsync("thor", "secret");
+
+        var redirect = Assert.IsType<RedirectResult>(result);
+        Assert.Equal("/Login/LoginFailed", redirect.Url);
+    }
+
+    [Fact]
+    public void LoginModel_OnGet_InitializesMenuStateAndEditUrl()
+    {
+        var menuProvider = new FakeMenuProvider
+        {
+            DefaultId = 7
+        };
+
+        var model = new LoginModel(
+            new FakeLoginProvider(),
+            new FakePageProvider(),
+            menuProvider,
+            new FakeImageProvider());
+
+        model.OnGet();
+
+        Assert.Equal(7, menuProvider.LastSelectedId);
+        Assert.Equal("/Editor/EditMainPage", model.EditUrl);
     }
 
     private sealed class FakePageProvider : IPageProvider
@@ -104,17 +144,25 @@ public class BootstrapPageModelTests
 
     private sealed class FakeMenuProvider : IMenuProvider
     {
-        public int GetDefaultId() => 1;
+        public int DefaultId { get; set; } = 1;
+        public int LastSelectedId { get; private set; }
+
+        public int GetDefaultId() => DefaultId;
 
         public List<MenuItem> GetTree(int pageId) => new();
 
-        public List<MenuItem> SelectItem(int selectedItemId) => new();
+        public List<MenuItem> SelectItem(int selectedItemId)
+        {
+            LastSelectedId = selectedItemId;
+            return new();
+        }
     }
 
     private sealed class FakeLoginProvider : ILoginProvider
     {
         public string LastUsername { get; private set; } = string.Empty;
         public string LastPassword { get; private set; } = string.Empty;
+        public AccountData.ErrorCode LoginUserResult { get; set; } = AccountData.ErrorCode.OK;
 
         public UserInfoModel GetLoginInfo() => new() { IsLoggedIn = false, UserAccessLevel = 0, Handle = string.Empty };
 
@@ -122,7 +170,7 @@ public class BootstrapPageModelTests
         {
             LastUsername = username;
             LastPassword = password;
-            return AccountData.ErrorCode.OK;
+            return LoginUserResult;
         }
 
         public void Logout() { }
