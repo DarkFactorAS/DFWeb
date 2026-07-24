@@ -1,4 +1,0 @@
-https://docs.docker.com/engine/examples/dotnetcore/#prerequisites
-
-Swagger GUI
-https://wakeupandcode.com/api-controllers-in-asp-net-core/
