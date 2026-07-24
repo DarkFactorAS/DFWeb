@@ -52,12 +52,18 @@ namespace DFWeb.BE.Provider
             var customer = configuration.Settings as WebConfig;
             if ( customer != null )
             {
-                var endpoint = customer.AccountServer?.Endpoint;
+                var accountServer = customer.AccountServer;
+                if ( accountServer == null )
+                {
+                    throw new InvalidOperationException("AccountServer is not configured. Please set a valid AccountServer configuration in the customer configuration.");
+                }
+                var endpoint = accountServer.Endpoint;
                 if (string.IsNullOrEmpty(endpoint))
                 {
                     throw new InvalidOperationException("AccountServer.Endpoint is not configured. Please set a valid endpoint in the customer configuration.");
                 }
                 _accountClient.SetEndpoint(endpoint);
+                _accountClient.SetAuthCredentials(accountServer.ClientId, accountServer.ClientSecret, accountServer.Scope);
             }
         }
 
