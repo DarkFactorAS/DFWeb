@@ -295,6 +295,13 @@ a:visited {
     padding: 0.5rem;
 }
 
+.edit_input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: block;
+}
+
 .edit_input:focus, .edit_input_small:focus {
     border-color: var(--accent-color);
     outline: none;

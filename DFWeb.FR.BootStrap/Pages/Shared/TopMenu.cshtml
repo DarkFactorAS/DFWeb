@@ -14,11 +14,11 @@
 
 @if (Model.UserInfoModel.IsLoggedIn == false)
 {
-    <div class="d-flex gap-2 ms-auto align-items-center">
-        <form class="d-flex gap-2 align-items-center" action="/api/Login/LoginUser" method="POST">
-            <input name="username" class="form-control form-control-sm" type="text" placeholder="Username" aria-label="Username">
-            <input name="password" class="form-control form-control-sm" type="password" placeholder="Password" aria-label="Password">
-            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2" type="submit">
+    <div class="d-flex ms-auto align-items-center w-100 w-lg-auto mt-3 mt-lg-0">
+        <form class="d-flex flex-wrap gap-2 align-items-center w-100 top-login-form" action="/api/Login/LoginUser" method="POST">
+            <input name="username" class="form-control form-control-sm top-login-input" type="text" placeholder="Username" aria-label="Username">
+            <input name="password" class="form-control form-control-sm top-login-input" type="password" placeholder="Password" aria-label="Password">
+            <button class="btn btn-primary btn-sm d-flex align-items-center gap-2 top-login-button" type="submit">
                 <i class="fas fa-sign-in-alt"></i> Sign in
             </button>
         </form>
@@ -46,4 +46,3 @@ else
         }
     </div>
 }
-</nav>
