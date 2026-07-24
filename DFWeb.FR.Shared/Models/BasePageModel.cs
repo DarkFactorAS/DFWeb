@@ -32,6 +32,12 @@ namespace DFWeb.FR.Models
         virtual
         public void OnGet(int id)
         {
+            // Login/reset pages are accessed without id, so use the default menu/page id.
+            if (id == 0)
+            {
+                id = menuProvider.GetDefaultId();
+            }
+
             base.GetMenuData(id);
             string relatedTags = "";
             pageModel = pageProvider.GetPage(id);

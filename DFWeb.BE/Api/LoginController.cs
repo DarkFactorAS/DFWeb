@@ -10,6 +10,7 @@ using DFWeb.BE.Provider;
 
 using DFCommonLib.Utils;
 using AccountCommon.SharedModel;
+using System.Net;
 
 namespace DFWeb.BE.Api
 {
@@ -60,7 +61,7 @@ namespace DFWeb.BE.Api
             {
                 return Redirect("/Login/ChangePassStep2");
             }
-            return Redirect("/Login/ChangePassStep1?msg=" + ret.message);
+            return Redirect("/Login/ChangePassStep1?msg=" + WebUtility.UrlEncode(ret.message));
         }
 
         [HttpPost]
@@ -72,7 +73,7 @@ namespace DFWeb.BE.Api
             {
                 return Redirect("/Login/ChangePassStep3");
             }
-            return Redirect("/Login/ChangePassStep1?msg=" + ret.message);
+            return Redirect("/Login/ChangePassStep2?msg=" + WebUtility.UrlEncode(ret.message));
         }
 
         [HttpPost]
@@ -88,12 +89,10 @@ namespace DFWeb.BE.Api
             if ( ret.errorCode == (int)ReturnData.ReturnCode.OK )
             {
                 _loginProvider.Logout();
-
-                // TODO: Go to login page
-                return Redirect("/");
+                return Redirect("/Admin/Login?msg=Password%20changed%20successfully");
             }
 
-            return Redirect("/Login/ChangePassStep1");
+            return Redirect("/Login/ChangePassStep3?msg=" + WebUtility.UrlEncode(ret.message));
        }
     }
 }

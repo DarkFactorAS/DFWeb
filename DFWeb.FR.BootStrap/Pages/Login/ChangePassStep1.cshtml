@@ -26,6 +26,12 @@
                 <div>
                     Enter your registered email address to receive a security code.
                 </div>
+                @if (!string.IsNullOrWhiteSpace(Request.Query["msg"]))
+                {
+                    <div class="alert alert-danger mt-3" role="alert">
+                        @Request.Query["msg"]
+                    </div>
+                }
                 <br>
                 <div class="articletext" style="margin:5px">
                     <form action="/api/Login/ChangePassStep1" method="POST">

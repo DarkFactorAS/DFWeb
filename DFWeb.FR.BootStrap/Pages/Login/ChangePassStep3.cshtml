@@ -17,10 +17,16 @@
 
             <div class="article" style="width:100%">
 
-                <h1> Set new passord</h1>
+                <h1> Set new password</h1>
                 <div >
                     Set new password. Your password must be at least 8 characters and contain 2 digits.
                 </div>
+                @if (!string.IsNullOrWhiteSpace(Request.Query["msg"]))
+                {
+                    <div class="alert alert-danger mt-3" role="alert">
+                        @Request.Query["msg"]
+                    </div>
+                }
 
                 <div class="articletext" style="margin:5px">
                     <form action="/api/Login/ChangePassStep3" method="POST">
@@ -35,7 +41,7 @@
                         </div>
                         <br>
                         <div class="buttonrow">
-                            <a href="/Login/Login/ChangePassStep2" class="btn btn-secondary" >Previous</a>
+                            <a href="/Login/ChangePassStep2" class="btn btn-secondary" >Previous</a>
                             <button class="btn btn-primary" type="submit"><i style="margin-right:5px" class="fa fa-sign-in" aria-hidden="true"></i>Next</button>
                         </div>
                     </form>
