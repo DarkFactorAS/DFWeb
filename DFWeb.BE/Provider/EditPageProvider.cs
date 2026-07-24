@@ -107,6 +107,11 @@ namespace DFWeb.BE.Provider
 
         public bool SaveFullPage(PageContentModel pageModel)
         {
+            if ( !CanEditPage() )
+            {
+                return false;
+            }
+
             var editPage = _pageRepository.GetPage( pageModel.PageId );
             editPage.PromoText = pageModel.PromoText;
             editPage.ContentText = pageModel.ContentText;
