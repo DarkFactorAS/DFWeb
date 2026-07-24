@@ -22,7 +22,7 @@ namespace DarkFactorCoreNet.Pages
             _loginProvider = loginProvider;
         }
 
-        public void OnGet(int id = 0)
+        public override void OnGet(int id)
         {
             int menuId = id == 0 ? menuProvider.GetDefaultId() : id;
             GetMenuData(menuId);

@@ -96,7 +96,7 @@ public class BootstrapPageModelTests
             menuProvider,
             new FakeImageProvider());
 
-        model.OnGet();
+        model.OnGet(0);
 
         Assert.Equal(7, menuProvider.LastSelectedId);
         Assert.Equal("/Editor/EditMainPage", model.EditUrl);
