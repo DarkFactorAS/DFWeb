@@ -103,7 +103,7 @@ namespace DFWeb.BE.Api
         {
             if ( string.IsNullOrEmpty( password ) || string.IsNullOrEmpty( password2 ) || !password.Equals(password2) )
             {
-                return Redirect("/Login/ChangePassStep3?msg=Passwords do not match");
+                return Redirect("/Login/ChangePassStep3?msg=" + WebUtility.UrlEncode("Passwords do not match"));
             }
 
             if (password.Length < 8 || password.Count(char.IsDigit) < 2)
