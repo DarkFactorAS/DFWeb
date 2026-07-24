@@ -89,7 +89,7 @@ namespace DFWeb.BE.Api
             if ( ret.errorCode == (int)ReturnData.ReturnCode.OK )
             {
                 _loginProvider.Logout();
-                return Redirect("/Admin/Login?msg=Password%20changed%20successfully");
+                return Redirect("/Admin/Login?msg=" + WebUtility.UrlEncode("Password changed successfully"));
             }
 
             return Redirect("/Login/ChangePassStep3?msg=" + WebUtility.UrlEncode(ret.message));
