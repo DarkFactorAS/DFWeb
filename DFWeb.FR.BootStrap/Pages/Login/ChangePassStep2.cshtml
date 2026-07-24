@@ -4,14 +4,12 @@
     ViewData["Title"] = "Change Password";
 }
 
+@section Navigation {
+    @await Html.PartialAsync("/Pages/Views/TopElements/TopMenuBasic.cshtml", Model)
+}
+
 
 <div>
-
-    <div class="row">
-        <div class="col-md-12">
-            @await Html.PartialAsync("../Views/TopElements/TopMenuBasic.cshtml", Model)
-        </div>
-    </div>
 
     <div class="row">
         <div class="col-md-2"></div>

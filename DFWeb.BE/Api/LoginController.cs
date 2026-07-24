@@ -11,6 +11,7 @@ using DFWeb.BE.Provider;
 using DFCommonLib.Utils;
 using AccountCommon.SharedModel;
 using System.Net;
+using System.Linq;
 
 namespace DFWeb.BE.Api
 {
@@ -56,7 +57,17 @@ namespace DFWeb.BE.Api
         [Route("ChangePassStep1")]
         public IActionResult ChangePassStep1([FromForm] string email)
         {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return Redirect("/Login/ChangePassStep1?msg=" + WebUtility.UrlEncode("Please enter a valid email address"));
+            }
+
             var ret = _loginProvider.ResetPasswordWithEmail(email);
+            if (ret == null)
+            {
+                return Redirect("/Login/ChangePassStep1?msg=" + WebUtility.UrlEncode("Unable to process password reset request"));
+            }
+
             if ( ret.errorCode == (int)ReturnData.ReturnCode.OK )
             {
                 return Redirect("/Login/ChangePassStep2");
@@ -68,7 +79,17 @@ namespace DFWeb.BE.Api
         [Route("ChangePassStep2")]
         public IActionResult ChangePassStep2([FromForm] string code)
         {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return Redirect("/Login/ChangePassStep2?msg=" + WebUtility.UrlEncode("Please enter your security code"));
+            }
+
             var ret = _loginProvider.ResetPasswordWithCode(code);
+            if (ret == null)
+            {
+                return Redirect("/Login/ChangePassStep2?msg=" + WebUtility.UrlEncode("Unable to verify security code"));
+            }
+
             if ( ret.errorCode == (int)ReturnData.ReturnCode.OK )
             {
                 return Redirect("/Login/ChangePassStep3");
@@ -85,7 +106,17 @@ namespace DFWeb.BE.Api
                 return Redirect("/Login/ChangePassStep3?msg=Passwords do not match");
             }
 
+            if (password.Length < 8 || password.Count(char.IsDigit) < 2)
+            {
+                return Redirect("/Login/ChangePassStep3?msg=" + WebUtility.UrlEncode("Password must be at least 8 characters and contain at least 2 digits"));
+            }
+
             var ret = _loginProvider.ResetPasswordWithToken(password);
+            if (ret == null)
+            {
+                return Redirect("/Login/ChangePassStep3?msg=" + WebUtility.UrlEncode("Unable to set a new password"));
+            }
+
             if ( ret.errorCode == (int)ReturnData.ReturnCode.OK )
             {
                 _loginProvider.Logout();

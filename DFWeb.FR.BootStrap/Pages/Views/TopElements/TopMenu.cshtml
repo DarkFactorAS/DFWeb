@@ -1,7 +1,12 @@
 ﻿@using DFWeb.BE.Models
 
-<ul class="navbar-nav">
-    @foreach (var item in Model.menuItems)
+@{
+    var menuItems = Model?.menuItems ?? new List<MenuItem>();
+    var userInfo = Model?.UserInfoModel;
+}
+
+<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    @foreach (var item in menuItems)
     {
         if (item.ParentID == 0)
         {
@@ -12,7 +17,7 @@
     }
 </ul>
 
-@if (Model.UserInfoModel.IsLoggedIn == false)
+@if (userInfo == null || userInfo.IsLoggedIn == false)
 {
     <div class="d-flex ms-auto align-items-center w-100 w-lg-auto mt-3 mt-lg-0">
         <a href="/Admin/Login" class="btn btn-primary btn-sm d-flex align-items-center gap-2 top-login-button">
@@ -23,7 +28,7 @@
 else
 {
     <div class="d-flex gap-3 ms-auto align-items-center">
-        <span class="text-white">Welcome <strong>@Model.UserInfoModel.Handle</strong></span>
+        <span class="text-white">Welcome <strong>@userInfo.Handle</strong></span>
         
         <form action="/api/Login/Logout" method="POST" class="d-inline">
             <button class="btn btn-outline-light btn-sm d-flex align-items-center gap-2" type="submit">
@@ -31,7 +36,7 @@ else
             </button>
         </form>
 
-        @if (Model.UserInfoModel.UserAccessLevel >= (int)AccessLevel.Editor)
+        @if (userInfo.UserAccessLevel >= (int)AccessLevel.Editor)
         {
             <form action="@Model.EditUrl" method="GET" class="d-inline">
                 <input type="hidden" name="id" value="@Model.PageId" />
