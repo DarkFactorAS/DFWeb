@@ -61,6 +61,24 @@ public class EditPageProviderTests
         Assert.Equal(1, editRepository.SavedPage.Acl);
     }
 
+    [Fact]
+    public void SaveFullPage_ReturnsFalseWhenUserCannotEditPage()
+    {
+        var storedPage = new PageContentModel { PageId = 7 };
+        var editRepository = new FakeEditPageRepository();
+        var provider = new EditPageProvider(
+            new FakePageProvider { StoredPage = storedPage },
+            editRepository,
+            new FakeUserSessionProvider { CanEdit = false },
+            new FakeLoginRepository(),
+            new FakePageRepository { StoredPage = storedPage });
+
+        var saved = provider.SaveFullPage(new PageContentModel { PageId = 7, ContentTitle = "Updated title" });
+
+        Assert.False(saved);
+        Assert.Null(editRepository.SavedPage);
+    }
+
     private sealed class FakePageProvider : IPageProvider
     {
         public PageContentModel StoredPage { get; set; } = new();
@@ -134,6 +152,8 @@ public class EditPageProviderTests
 
     private sealed class FakeUserSessionProvider : IUserSessionProvider
     {
+        public bool CanEdit { get; set; } = true;
+
         public void RemoveSession() { }
 
         public void SetUser(UserModel user) { }
@@ -146,7 +166,7 @@ public class EditPageProviderTests
 
         public bool IsLoggedIn() => true;
 
-        public bool CanEditPage() => true;
+        public bool CanEditPage() => CanEdit;
     }
 
     private sealed class FakeLoginRepository : ILoginRepository
