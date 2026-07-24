@@ -5,34 +5,44 @@
     function postData(url, postData)
     {
         // Show some debug
-        sData = JSON.stringify(postData);
+        const sData = JSON.stringify(postData);
         console.log("postData:" + url + " => " + sData);
 
-        //debugger;
-
-        $.ajax(url, 
+        fetch(url,
         {
-            type: 'POST',
-            data: JSON.stringify(postData),
-            contentType: "application/json; charset=utf-8",
-            //dataType: "json",
-
-            success: function(data){
-                console.debug("PostData[OK]:" + data);
-                window.location.reload(true);
+            method: 'POST',
+            headers:
+            {
+                'Content-Type': 'application/json; charset=utf-8'
             },
-            failure: function(errMsg) {
-                console.debug("PostData[ERROR]:"+ errMsg);
+            body: sData
+        })
+        .then(async function(response)
+        {
+            const responseText = await response.text();
+
+            if (!response.ok)
+            {
+                throw new Error(responseText || response.statusText);
             }
+
+            console.debug("PostData[OK]:" + responseText);
+            window.location.reload();
+        })
+        .catch(function(error)
+        {
+            console.debug("PostData[ERROR]:" + error);
         });
     }
     
     function getSectionValue(sectionId,fieldName) 
     { 
-        return $("#" + fieldName + "_" + sectionId).val(); 
+        const field = document.getElementById(fieldName + "_" + sectionId);
+        return field ? field.value : null;
     } 
 
     function getFieldValue(fieldName) 
     { 
-        return $("#" + fieldName ).val(); 
+        const field = document.getElementById(fieldName);
+        return field ? field.value : null;
     } 
