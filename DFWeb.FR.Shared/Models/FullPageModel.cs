@@ -19,7 +19,7 @@ namespace DFWeb.FR.Models
         public void OnGet(int id)
         {
             base.OnGet(id);
-            articleSections = pageProvider.GetArticleSections(id);
+            articleSections = pageProvider.GetArticleSections(PageId);
             EditUrl = "/Editor/EditPage";
         }
     }
