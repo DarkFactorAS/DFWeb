@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 using DFWeb.BE.Provider;
 using DFWeb.FR.Models;
+using DFCommonLib.Utils;
+using AccountCommon.SharedModel;
 
 namespace DarkFactorCoreNet.Pages
 {
@@ -20,10 +22,30 @@ namespace DarkFactorCoreNet.Pages
             _loginProvider = loginProvider;
         }
 
+        public override void OnGet(int id)
+        {
+            int menuId = id == 0 ? menuProvider.GetDefaultId() : id;
+            GetMenuData(menuId);
+            PageId = menuId;
+            EditUrl = "/Editor/EditMainPage";
+        }
+
         public IActionResult OnPostAsync([FromForm] String username, String password)
         {
-            _loginProvider.LoginUser(username, password);
-            return Redirect("/");
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                return Redirect("/Login/LoginFailed");
+            }
+
+            var encryptedPassword = DFCrypt.EncryptInput(password);
+            var errorCode = _loginProvider.LoginUser(username, encryptedPassword);
+
+            if (errorCode == AccountData.ErrorCode.OK)
+            {
+                return Redirect("/");
+            }
+
+            return Redirect("/Login/LoginFailed");
         }
     }
 }
