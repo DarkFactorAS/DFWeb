@@ -24,19 +24,22 @@
                 <div style="margin:15px;">
                     Please enter the security code received in your email.
                 </div>
+                @if (!string.IsNullOrWhiteSpace(Request.Query["msg"]))
+                {
+                    <div class="alert alert-danger mt-3" role="alert">
+                        @Request.Query["msg"]
+                    </div>
+                }
 
                 <div class="articletext" style="margin:5px">
                     <form action="/api/Login/ChangePassStep2" method="POST">
-                        <div id="error" class="alert alert-danger" role="alert" style="margin-top:5px; display:none; ">
-                            <strong>Wrong pincode</strong>
-                        </div>
                         <div>
-                            <strong>Username</strong>
+                            <strong>Security code</strong>
                             <input name="code" class="form-control" type="text" placeholder="Code" aria-label="Code">
                         </div>
                         <br>
                         <div class="buttonrow">
-                            <a href="/Login/Login/ChangePassStep1" class="btn btn-secondary" >Previous</a>
+                            <a href="/Login/ChangePassStep1" class="btn btn-secondary" >Previous</a>
                             <button class="btn btn-primary" type="submit"><i style="margin-right:5px" class="fa fa-sign-in" aria-hidden="true"></i>Next</button>
                         </div>
                     </form>
@@ -49,56 +52,3 @@
 
     </div>
 </div>
-
-<script language="javascript">
-
-    function parse_query_string(query) {
-        var vars = query.split("&");
-        var query_string = {};
-        for (var i = 0; i < vars.length; i++) {
-            var pair = vars[i].split("=");
-            var key = decodeURIComponent(pair[0]);
-            var value = decodeURIComponent(pair[1]);
-            // If first entry with this name
-            if (typeof query_string[key] === "undefined") {
-            query_string[key] = decodeURIComponent(value);
-            // If second entry with this name
-            } else if (typeof query_string[key] === "string") {
-            var arr = [query_string[key], decodeURIComponent(value)];
-            query_string[key] = arr;
-            // If third or later entry with this name
-            } else {
-            query_string[key].push(decodeURIComponent(value));
-            }
-        }
-        return query_string;
-    }
-
-    function getValue( obj, keyName )
-    {
-        if ( obj === null || obj === undefined )
-        {
-            return null;
-        }
-
-        return obj[keyName];
-    }
-
-    function onInit()
-    {
-        var query = window.location.search.substring(1);
-        var queryKvPair = parse_query_string(query);
-        var error = getValue(queryKvPair,"errorId");
-        switch(error)
-        {
-            case "PinCodeDoesNotMatch":
-                var errorElement = document.getElementById("error");
-                break;
-            default:
-                $("error").hide();
-                break;
-        }
-    }
-
-    onInit();
-</script>
