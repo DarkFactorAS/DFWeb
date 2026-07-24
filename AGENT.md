@@ -75,7 +75,7 @@ contributors working in this repository.
   branch with a clear commit message.
 - Continue committing incrementally after each resolved action rather than
   batching multiple completed actions into a single commit.
-- Before starting a Pull Request make sure all unittests and docker containers build and run
+- Before opening a pull request, make sure all unit tests pass and Docker containers build and run successfully.
 
 ## Related Repositories
 
