@@ -55,6 +55,9 @@ GH_SECRET_JIRA_API_TOKEN
 5. Convert fetched JSON into importable agent todos with [jira-json-to-agent-todos.sh](./scripts/jira-json-to-agent-todos.sh).
 6. Refine generated tasks using [agent-task-template.md](./assets/agent-task-template.md) when needed.
 7. Open or update the todo list with concise, action-oriented task titles.
+8. Commit the generated tasks to the Jira issue branch.
+9. Push the Jira issue branch to the remote repository.
+10. Start a PR for the Jira issue branch.
 
 ## Quick Commands
 ```bash
