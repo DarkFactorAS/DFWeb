@@ -45,7 +45,7 @@ services:
         - nuget_username
         - nuget_token
     environment:
-      - ASPNETCORE_ENVIRONMENT=DevelopmentDocker
+      - ASPNETCORE_ENVIRONMENT=acceptance
       - ASPNETCORE_URLS=http://+:80
     ports:
       - "4005:80"
