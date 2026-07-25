@@ -38,7 +38,7 @@ jobs:
     name: Deploy to Staging
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.7
     with:
-      environment: Staging
+      environment: staging
       external_port: 8500
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
@@ -52,7 +52,7 @@ jobs:
     needs: [staging]
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.7
     with:
-      environment: Production
+      environment: production
       external_port: 9500
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
