@@ -1,6 +1,0 @@
-[submodule "Submodules/DFCommonLib"]
-	path = Submodules/DFCommonLib
-	url = https://github.com/DarkFactorAS/DFCommonLib.git
-[submodule "Submodules/DFAccountServer"]
-	path = Submodules/DFAccountServer
-	url = https://github.com/Chaooz/2020-AccountServer.git
