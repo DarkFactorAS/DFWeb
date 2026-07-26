@@ -15,7 +15,7 @@ jobs:
   build:
     name: Build Docker Image
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-ci.yml@v1.6
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-ci.yml@v1.7
     with:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
@@ -27,10 +27,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
 
