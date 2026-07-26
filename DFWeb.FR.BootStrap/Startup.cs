@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.Swagger; 
+using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Hosting;
@@ -70,7 +70,14 @@ namespace DarkFactorCoreNet
                 options.PageViewLocationFormats.Add("/Pages/{0}.cshtml");
             });
 
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "DarkFactor Web API",
+                    Version = "v1"
+                });
+            });
 
             services.AddSession(options =>
             {
