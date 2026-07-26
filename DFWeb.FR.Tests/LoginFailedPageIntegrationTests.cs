@@ -100,11 +100,10 @@ public class LoginFailedPageIntegrationTests
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var html = await response.Content.ReadAsStringAsync();
-        Assert.Contains("All rights reserved.", html);
-        Assert.Contains("Environment: Development", html);
-        Assert.DoesNotContain("<span class=\"ms-2\">*</span>", html);
-    }
+var html = await response.Content.ReadAsStringAsync();
+Assert.Contains("All rights reserved.", html);
+Assert.Contains("Environment: Development", html);
+Assert.DoesNotContain("<span class=\"ms-2\" aria-label=\"Production\">*</span>", html);
 
     [Fact]
     public async Task Footer_RendersAsterisk_WhenProduction()
