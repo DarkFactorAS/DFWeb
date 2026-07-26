@@ -103,6 +103,7 @@ public class LoginFailedPageIntegrationTests
         var html = await response.Content.ReadAsStringAsync();
         Assert.Contains("All rights reserved.", html);
         Assert.Contains("Environment: Development", html);
+        Assert.Contains($"Version: {Program.AppVersion}", html);
         Assert.DoesNotContain("<span class=\"ms-2\" aria-label=\"Production\">*</span>", html);
     }
 
@@ -119,6 +120,7 @@ public class LoginFailedPageIntegrationTests
         var html = await response.Content.ReadAsStringAsync();
         Assert.Contains("All rights reserved.", html);
         Assert.Contains("<span class=\"ms-2\" aria-label=\"Production\">*</span>", html);
+        Assert.Contains($"Version: {Program.AppVersion}", html);
         Assert.DoesNotContain("Environment:", html);
     }
 

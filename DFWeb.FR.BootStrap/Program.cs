@@ -26,7 +26,7 @@ namespace DarkFactorCoreNet
     public class Program
     {
         public static string AppName = "DarkFactor Web";
-        public static string AppVersion = "1.0.0";
+        public static string AppVersion = "1.260726.0";
 
         public static void Main(string[] args)
         {
