@@ -90,11 +90,44 @@ public class LoginFailedPageIntegrationTests
         Assert.DoesNotContain("w-100 w-lg-auto", html);
     }
 
-    private static TestServer BuildServer()
+    [Fact]
+    public async Task Footer_RendersEnvironmentName_WhenNotProduction()
+    {
+        using var server = BuildServer("Development");
+        using var client = server.CreateClient();
+
+        var response = await client.GetAsync("/Login/LoginFailed");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("All rights reserved.", html);
+        Assert.Contains("Environment: Development", html);
+        Assert.DoesNotContain("<span class=\"ms-2\" aria-label=\"Production\">*</span>", html);
+    }
+
+    [Fact]
+    public async Task Footer_RendersAsterisk_WhenProduction()
+    {
+        using var server = BuildServer("Production");
+        using var client = server.CreateClient();
+
+        var response = await client.GetAsync("/Login/LoginFailed");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var html = await response.Content.ReadAsStringAsync();
+        Assert.Contains("All rights reserved.", html);
+        Assert.Contains("<span class=\"ms-2\" aria-label=\"Production\">*</span>", html);
+        Assert.DoesNotContain("Environment:", html);
+    }
+
+    private static TestServer BuildServer(string environmentName = "Development")
     {
         var contentRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../DFWeb.FR.BootStrap"));
 
         var webHostBuilder = new WebHostBuilder()
+            .UseEnvironment(environmentName)
             .UseContentRoot(contentRoot)
             .ConfigureServices(services =>
             {

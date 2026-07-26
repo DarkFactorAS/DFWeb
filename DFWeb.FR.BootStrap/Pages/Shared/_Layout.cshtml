@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+@{
+    var isProductionEnvironment = string.Equals(WebHostEnvironment.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -50,7 +55,17 @@
     <!-- Footer -->
     <footer class="bg-dark text-white text-center py-4 mt-5 border-top">
         <div class="container-lg">
-            <p class="mb-0">&copy; 2024 - DarkFactor. All rights reserved.</p>
+            <p class="mb-0">
+                &copy; 2024 - DarkFactor. All rights reserved.
+                @if (isProductionEnvironment)
+                {
+                    <span class="ms-2" aria-label="Production">*</span>
+                }
+                else
+                {
+                    <span class="ms-2">Environment: @WebHostEnvironment.EnvironmentName</span>
+                }
+            </p>
         </div>
     </footer>
 
