@@ -28,7 +28,7 @@ namespace DarkFactorCoreNet
             Configuration = configuration;
 
             IDFLogger<Startup> logger = new DFLogger<Startup>();
-            logger.Startup(Program.AppName, Program.AppVersion);
+            logger.Startup(Program.AppName, Program.Version);
 
             // Run database script
             IStartupDatabasePatcher startupRepository = DFServices.GetService<IStartupDatabasePatcher>();
