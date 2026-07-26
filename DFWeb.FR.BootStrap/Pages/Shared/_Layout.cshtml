@@ -1,6 +1,6 @@
 ﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
 @{
-    var isProductionEnvironment = string.Equals(WebHostEnvironment.EnvironmentName, "Production", StringComparison.OrdinalIgnoreCase);
+    var isProductionEnvironment = Microsoft.Extensions.Hosting.HostingEnvironmentExtensions.IsProduction(WebHostEnvironment);
 }
 
 <!DOCTYPE html>
