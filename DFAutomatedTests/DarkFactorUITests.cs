@@ -8,47 +8,9 @@ namespace DFAutomatedTests;
 /// These tests verify key user journeys and page interactions.
 /// </summary>
 [TestFixture]
-public class DarkFactorUITests
+public class DarkFactorUITests : PlaywrightFixtureBase
 {
-    private IPlaywright? _playwright;
-    private IBrowser? _browser;
-    private IPage? _page;
-private static readonly string BaseUrl = Environment.GetEnvironmentVariable("DFWEB_BASE_URL") ?? "http://localhost:5000";
-
-    [OneTimeSetUp]
-    public async Task InitializePlaywright()
-    {
-        _playwright = await Playwright.CreateAsync();
-        _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = true,
-        });
-    }
-
-    [SetUp]
-    public async Task CreatePage()
-    {
-        _page = await _browser!.NewPageAsync();
-    }
-
-    [TearDown]
-    public async Task ClosePage()
-    {
-        if (_page != null)
-        {
-            await _page.CloseAsync();
-        }
-    }
-
-    [OneTimeTearDown]
-    public async Task DisposePlaywright()
-    {
-        if (_browser != null)
-        {
-            await _browser.CloseAsync();
-        }
-        _playwright?.Dispose();
-    }
+    private static readonly string BaseUrl = Environment.GetEnvironmentVariable("DFWEB_BASE_URL") ?? "http://localhost:5000";
 
     [Test]
     public async Task ApplicationLoadsSuccessfully()
