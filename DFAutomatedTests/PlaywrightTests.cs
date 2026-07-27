@@ -21,10 +21,11 @@ public class PlaywrightTests
     }
 
     [SetUp]
-    public async Task CreatePage()
-    {
-        _page = await _browser!.NewPageAsync();
-    }
+public async Task CreatePage()
+{
+    Assert.That(_browser, Is.Not.Null, "Playwright browser must be initialized in [OneTimeSetUp] before creating pages.");
+    _page = await _browser.NewPageAsync();
+}
 
     [TearDown]
     public async Task ClosePage()
