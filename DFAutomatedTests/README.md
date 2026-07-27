@@ -22,10 +22,11 @@ This project contains automated UI tests for the DarkFactor Web application usin
 ### Running Tests
 
 #### Using dotnet CLI
-```bash
-cd DFAutomatedTests
-dotnet test
-```
+
+    # Ensure the web application is running (default Base URL: http://localhost:5000)
+    # Optionally override the base URL: export DFWEB_BASE_URL="http://localhost:5000"
+    cd DFAutomatedTests
+    dotnet test
 
 #### Using Visual Studio Test Explorer
 1. Add `DFAutomatedTests/DFAutomatedTests.csproj` to your solution (or open the `DFAutomatedTests` folder in Visual Studio)
