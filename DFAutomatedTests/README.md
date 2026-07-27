@@ -48,8 +48,7 @@ dotnet test -v detailed
 The tests are configured with:
 - **Browser**: Chromium (headless mode by default)
 - **Framework**: NUnit 4.0
-- **Base URL**: `http://localhost:5000`
-
+- **Base URL**: `http://localhost:5000` (override with `DFWEB_BASE_URL`)
 ### Modifying Test Configuration
 
 Edit `PlaywrightTests.cs` to change:
