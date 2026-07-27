@@ -19,3 +19,8 @@ appsettings.acceptance.json
 # Automated tests (Postman) #
 # ========================= #
 *.postman_environment.json
+
+# ========================= #
+# Automated tests output    #
+# ========================= #
+test-results.txt
