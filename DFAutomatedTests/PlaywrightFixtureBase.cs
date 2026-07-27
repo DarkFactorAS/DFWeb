@@ -5,6 +5,8 @@ namespace DFAutomatedTests;
 
 public abstract class PlaywrightFixtureBase
 {
+    protected static readonly string BaseUrl = Environment.GetEnvironmentVariable("DFWEB_BASE_URL") ?? "http://localhost:5000";
+
     protected IPlaywright? _playwright;
     protected IBrowser? _browser;
     protected IPage? _page;

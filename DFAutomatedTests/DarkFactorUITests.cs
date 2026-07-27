@@ -10,8 +10,6 @@ namespace DFAutomatedTests;
 [TestFixture]
 public class DarkFactorUITests : PlaywrightFixtureBase
 {
-    private static readonly string BaseUrl = Environment.GetEnvironmentVariable("DFWEB_BASE_URL") ?? "http://localhost:5000";
-
     [Test]
     public async Task ApplicationLoadsSuccessfully()
     {

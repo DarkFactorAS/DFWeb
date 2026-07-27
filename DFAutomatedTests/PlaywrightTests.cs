@@ -10,7 +10,7 @@ public class PlaywrightTests : PlaywrightFixtureBase
     public async Task NavigateToHomePage()
     {
         // Test navigating to the home page
-        await _page!.GotoAsync("http://localhost:5000");
+        await _page!.GotoAsync(BaseUrl);
         
         // Verify page title contains expected text
         var title = await _page.TitleAsync();
@@ -21,7 +21,7 @@ public class PlaywrightTests : PlaywrightFixtureBase
     public async Task PageLoadsSuccessfully()
     {
         // Navigate to the application
-        var response = await _page!.GotoAsync("http://localhost:5000");
+        var response = await _page!.GotoAsync(BaseUrl);
         
         // Verify successful navigation
         Assert.That(response!.Status, Is.EqualTo(200), "Page should load successfully");
@@ -31,7 +31,7 @@ public class PlaywrightTests : PlaywrightFixtureBase
     public async Task CanInteractWithPageElements()
     {
         // Navigate to home page
-        await _page!.GotoAsync("http://localhost:5000");
+        await _page!.GotoAsync(BaseUrl);
         
         // Wait for page to be fully loaded
         await _page.WaitForLoadStateAsync(LoadState.NetworkIdle);
