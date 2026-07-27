@@ -11,8 +11,14 @@ This project contains automated UI tests for the DarkFactor Web application usin
 ### Installation
 
 1. The Playwright NuGet packages are already configured in `DFAutomatedTests.csproj`
-2. The first time you run tests, Playwright will automatically download the required browsers
-
+2. Restore local tools (Playwright CLI):
+   ```bash
+   dotnet tool restore
+   ```
+3. Install Playwright browsers (once per machine/CI image):
+   ```bash
+   dotnet tool run playwright install
+   ```
 ### Running Tests
 
 #### Using dotnet CLI
