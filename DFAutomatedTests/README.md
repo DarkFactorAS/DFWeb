@@ -28,9 +28,10 @@ dotnet test
 ```
 
 #### Using Visual Studio Test Explorer
-1. Open Test Explorer (Ctrl+E, T)
-2. Look for tests under "DFAutomatedTests"
-3. Run individual tests or all tests
+1. Add `DFAutomatedTests/DFAutomatedTests.csproj` to your solution (or open the `DFAutomatedTests` folder in Visual Studio)
+2. Open Test Explorer (Ctrl+E, T)
+3. Look for tests under "DFAutomatedTests"
+4. Run individual tests or all tests
 
 #### Run specific test class
 ```bash
