@@ -25,7 +25,7 @@ public abstract class PlaywrightFixtureBase
     public async Task CreatePage()
     {
         Assert.That(_browser, Is.Not.Null, "Playwright browser must be initialized in [OneTimeSetUp] before creating pages.");
-        _page = await _browser.NewPageAsync();
+        _page = await _browser!.NewPageAsync();
     }
 
     [TearDown]
