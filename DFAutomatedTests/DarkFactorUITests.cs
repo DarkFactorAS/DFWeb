@@ -13,7 +13,7 @@ public class DarkFactorUITests
     private IPlaywright? _playwright;
     private IBrowser? _browser;
     private IPage? _page;
-    private const string BaseUrl = "http://localhost:5000";
+private static readonly string BaseUrl = Environment.GetEnvironmentVariable("DFWEB_BASE_URL") ?? "http://localhost:5000";
 
     [OneTimeSetUp]
     public async Task InitializePlaywright()
