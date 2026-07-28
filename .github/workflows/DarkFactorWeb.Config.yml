@@ -37,7 +37,7 @@ permissions:
 
 jobs:
 
-  deploy:
+  build:
 
     # Timeout for the job
     timeout-minutes: 5
