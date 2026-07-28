@@ -65,7 +65,7 @@ jobs:
       project_name: "DFAutomatedTests"
       project_path: "DFAutomatedTests"
       config_path: "DFWeb.BE"
-
+    secrets: inherit
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
