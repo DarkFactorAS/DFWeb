@@ -21,7 +21,6 @@ on:
         options:
           - staging
           - production
-<<<<<<< HEAD
       config_settings:
         description: 'Optional flags: accountserver,bugreportweb'
         required: false
@@ -32,8 +31,6 @@ on:
         required: false
         default: false
         type: boolean
-=======
->>>>>>> origin/master
 
 permissions:
   contents: read
@@ -41,18 +38,14 @@ permissions:
 jobs:
 
   deploy:
-<<<<<<< HEAD
 
     # Timeout for the job
     timeout-minutes: 5
 
-=======
->>>>>>> origin/master
     runs-on: self-hosted
 
     env:
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
-<<<<<<< HEAD
       CONFIG_FILE: appsettings.${{ inputs.environment }}.json
       CONFIG_PATH: "."
       CONFIG_TEMPLATE: ${{ vars.APPCONFIG }}
@@ -81,7 +74,7 @@ jobs:
 
         template = os.environ.get("CONFIG_TEMPLATE", "")
         if not template.strip():
-            print("CONFIG template is empty. Set repository/environment variable 'CONFIG'.", file=sys.stderr)
+            print("CONFIG template is empty. Set repository/environment variable 'APPCONFIG'.", file=sys.stderr)
             sys.exit(1)
 
         db_server = os.environ.get("DATABASE_SERVER", "").strip()
@@ -178,52 +171,3 @@ jobs:
             print("DatabaseConnection.Server is not an IP address.", file=sys.stderr)
             sys.exit(1)
         PY
-=======
-      CONFIG: ${{ vars.CONFIG }}
-      CONFIG_FILE: appsettings.${{ inputs.environment }}.json
-      CONFIG_PATH: "."
-
-    steps:
-
-    # Replace basic values
-    - name: Replace basic values in config file
-      run: |
-        CONFIG="${CONFIG/DATABASE.SERVER/${{ vars.DATABASE_SERVER }}}"
-        CONFIG="${CONFIG/DATABASE.PORT/${{ vars.DATABASE_PORT }}}"
-        CONFIG="${CONFIG/DATABASE.USERNAME/${{ secrets.DATABASE_USERNAME }}}"
-        CONFIG="${CONFIG/DATABASE.PASSWORD/${{ secrets.DATABASE_PASSWORD }}}"
-        CONFIG="${CONFIG/DATABASE.NAME/${{ vars.DATABASE_NAME }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
-
-    # Replace additional values in config file
-    - name: Replace account server values in config file
-      if: contains(inputs.config_settings, 'accountserver')  
-      run: |
-        CONFIG="${CONFIG/ACCOUNTSERVER.URL/${{ secrets.ACCOUNTSERVER_URL }}}"
-        CONFIG="${CONFIG/ACCOUNTSERVER.CLIENTSECRET/${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
-
-    # Replace additional values in config file
-    - name: Replace bug report server values in config file
-      if: contains(inputs.config_settings, 'bugreportweb')
-      run: |
-        CONFIG="${CONFIG/BUGREPORTSERVER.URL/${{ vars.BUGREPORTSERVER_URL }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
-
-    # Create the config file
-    - name: Create config file
-      run: |
-        printf '%s\n' "$CONFIG" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
->>>>>>> origin/master
