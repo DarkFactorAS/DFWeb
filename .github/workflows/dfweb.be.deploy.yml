@@ -37,6 +37,9 @@ jobs:
     name: Run Staging Playwright Tests
     runs-on: ubuntu-latest
 
+    environment:
+      DFWEB_BASE_URL: https://dfweb-staging.darkfactoras.com
+
     steps:
       - uses: actions/checkout@v6
 
@@ -63,13 +66,13 @@ jobs:
 
       - name: Start application for UI tests
         run: |
-          nohup dotnet run --project DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configuration Release --urls "http://127.0.0.1:5000" > /tmp/dfweb-bootstrap.log 2>&1 &
+          nohup dotnet run --project DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configuration Release --urls "${{ env.DFWEB_BASE_URL }}" > /tmp/dfweb-bootstrap.log 2>&1 &
           echo $! > /tmp/dfweb-bootstrap.pid
 
       - name: Wait for application readiness
         run: |
           for attempt in {1..60}; do
-            if curl --silent --show-error --fail http://127.0.0.1:5000/ > /dev/null; then
+            if curl --silent --show-error --fail "${{ env.DFWEB_BASE_URL }}" > /dev/null; then
               exit 0
             fi
             sleep 2
@@ -80,7 +83,7 @@ jobs:
 
       - name: Run Playwright automated tests
         env:
-          DFWEB_BASE_URL: http://127.0.0.1:5000
+          DFWEB_BASE_URL: ${{ env.DFWEB_BASE_URL }}
         run: dotnet test DFAutomatedTests/DFAutomatedTests.csproj --configuration Release --no-build --logger "console;verbosity=normal"
 
       - name: Stop application
