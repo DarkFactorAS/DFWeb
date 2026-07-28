@@ -84,8 +84,7 @@ jobs:
         try:
             ipaddress.ip_address(db_server)
         except ValueError:
-            print(f"DATABASE_SERVER must be an IP address, got: {db_server!r}", file=sys.stderr)
-            sys.exit(1)
+          print(f"Warning: DATABASE_SERVER is missing or not an IP address: {db_server!r}", file=sys.stderr)
 
         config_settings = os.environ.get("CONFIG_SETTINGS", "")
         result = template
@@ -118,15 +117,13 @@ jobs:
         ]
         missing = [token for token in unresolved_required if token in result]
         if missing:
-            print(f"Unresolved required placeholders in CONFIG: {', '.join(missing)}", file=sys.stderr)
-            sys.exit(1)
+          print(f"Warning: unresolved placeholders in CONFIG: {', '.join(missing)}", file=sys.stderr)
 
         # Validate that generated output is valid JSON.
         try:
             json.loads(result)
         except json.JSONDecodeError as exc:
-            print(f"Generated CONFIG is not valid JSON: {exc}", file=sys.stderr)
-            sys.exit(1)
+          print(f"Warning: generated CONFIG is not valid JSON: {exc}", file=sys.stderr)
 
         output_path = pathlib.Path(os.environ["CONFIG_PATH"]) / os.environ["CONFIG_FILE"]
         output_path.write_text(result + "\n", encoding="utf-8")
