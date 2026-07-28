@@ -5,14 +5,10 @@ WORKDIR /app
 # Copy everything else
 COPY . .
 
-# Restore secrets
-RUN --mount=type=secret,id=nuget_username,env=NUGET_USERNAME \
-    --mount=type=secret,id=nuget_token,env=NUGET_TOKEN \
-    echo "username is $NUGET_USERNAME" && \
-    echo "token is $NUGET_TOKEN"
-
 # Restore dependencies
-RUN dotnet restore ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configfile ./DFWeb.FR.BootStrap/NuGet.config
+RUN --mount=type=secret,id=nuget_username,env=NUGET_USERNAME,required=true \
+    --mount=type=secret,id=nuget_token,env=NUGET_TOKEN,required=true \
+    dotnet restore ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configfile ./DFWeb.FR.BootStrap/NuGet.config
 
 # Build solution
 RUN dotnet publish ./DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj -c Release -o out --no-restore
