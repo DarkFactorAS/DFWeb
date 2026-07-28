@@ -32,12 +32,15 @@ on:
         default: false
         type: boolean
 
-permissions:
-  contents: read
+#permissions:
+#  contents: read
 
 jobs:
 
   build:
+
+    permissions:
+      contents: read
 
     # Timeout for the job
     timeout-minutes: 5
@@ -48,15 +51,15 @@ jobs:
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
       CONFIG_FILE: appsettings.${{ inputs.environment }}.json
       CONFIG_PATH: "."
+      CONFIG_TEMPLATE: ${{ vars.CONFIG }}
 
     steps:
 
-    - name: Checkout repository
-      uses: actions/checkout@v4      
+#    - name: Checkout repository
+#      uses: actions/checkout@v4      
 
     - name: Generate config file from template
       env:
-        CONFIG_TEMPLATE: ${{ vars.CONFIG }}
         CONFIG_SETTINGS: ${{ inputs.config_settings }}
         DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE_PORT: ${{ vars.DATABASE_PORT }}
@@ -77,7 +80,7 @@ jobs:
 
         template = os.environ.get("CONFIG_TEMPLATE", "")
         if not template.strip():
-            print("CONFIG template is empty. Set repository/environment variable 'APPCONFIG'.", file=sys.stderr)
+            print("CONFIG template is empty. Set repository/environment variable 'CONFIG'.", file=sys.stderr)
             sys.exit(1)
 
         db_server = os.environ.get("DATABASE_SERVER", "").strip()
@@ -138,8 +141,6 @@ jobs:
 
     - name: Debug generated config
       if: ${{ inputs.debug }}
-      env:
-        CONFIG_TEMPLATE: ${{ vars.CONFIG }}
       run: |
         python3 - <<'PY'
         import ipaddress
