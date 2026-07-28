@@ -73,10 +73,24 @@ jobs:
     #
     - name: Verify secrets and variables are set
       run: |
-        if [ -z "${{ secrets.NUGET_USERNAME }}" ] || [ -z "${{ secrets.NUGET_TOKEN }}" ]; then
+        if [ -z "${{ secrets.NUGET_TOKEN }}" ]; then
+          echo "NUGET_TOKEN secret is not set. Please check the organization and environment secrets."
+          exit 1
+        fi
+
+        if [ -z "${{ secrets.NUGET_USERNAME }}" ] && [ -z "${{ vars.NUGET_USERNAME }}" ]; then
           echo "One or more required secrets are not set. Please check the organization and environment secrets."
           exit 1
         fi
+
+    - name: Resolve NuGet username
+      id: resolve-nuget-username
+      run: |
+        USERNAME="${{ secrets.NUGET_USERNAME }}"
+        if [ -z "$USERNAME" ]; then
+          USERNAME="${{ vars.NUGET_USERNAME }}"
+        fi
+        echo "username=$USERNAME" >> $GITHUB_OUTPUT
         
     - name: Convert project name to lowercase for Docker name
       id: convert_to_lowercase
@@ -139,7 +153,7 @@ jobs:
         file: ${{ inputs.project_path }}/${{ inputs.dockerfile }}
         tags: ghcr.io/${{ steps.lowercase_repository.outputs.REPOSITORY_NAME }}/${{ steps.convert_to_lowercase.outputs.IMAGE_NAME }}-image:latest
         secrets: |
-          "NUGET_USERNAME=${{ secrets.NUGET_USERNAME }}"
-          "NUGET_TOKEN=${{ secrets.NUGET_TOKEN }}"
+          nuget_username=${{ steps.resolve-nuget-username.outputs.username }}
+          nuget_token=${{ secrets.NUGET_TOKEN }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
