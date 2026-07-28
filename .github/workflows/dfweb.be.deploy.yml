@@ -33,34 +33,15 @@ permissions:
 
 jobs:
 
-  build-docker-image:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      # 1. Set up Docker Buildx (Required for BuildKit features)
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # 2. Authenticate to your Registry
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # 3. Build and push image with native GHA caching
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}/my-image:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
+  build-docker-image-staging:
+    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
+    name: Build Docker Image for Staging
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-build-docker-image.yml@v1.7
+    with:
+      project_name: "DFWeb.FR.BootStrap"
+      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
+      versionfile: "DFWeb.FR.BootStrap/Program.cs"
+    secrets: inherit
 
   staging-automated-tests:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
@@ -122,16 +103,6 @@ jobs:
           if [ -f /tmp/dfweb-bootstrap.pid ]; then
             kill "$(cat /tmp/dfweb-bootstrap.pid)" || true
           fi
-
-  build-docker-image-staging:
-    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
-    name: Build Docker Image for Staging
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-build-docker-image@v1.7
-    with:
-      project_name: "DFWeb.FR.BootStrap"
-      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
-      versionfile: "DFWeb.FR.BootStrap/Program.cs"
-    secrets: inherit
 
   staging:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
