@@ -48,12 +48,15 @@ jobs:
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
       CONFIG_FILE: appsettings.${{ inputs.environment }}.json
       CONFIG_PATH: "."
-      CONFIG_TEMPLATE: ${{ vars.APPCONFIG }}
 
     steps:
 
+    - name: Checkout repository
+      uses: actions/checkout@v4      
+
     - name: Generate config file from template
       env:
+        CONFIG_TEMPLATE: ${{ vars.CONFIG }}
         CONFIG_SETTINGS: ${{ inputs.config_settings }}
         DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE_PORT: ${{ vars.DATABASE_PORT }}
@@ -138,6 +141,8 @@ jobs:
 
     - name: Debug generated config
       if: ${{ inputs.debug }}
+      env:
+        CONFIG_TEMPLATE: ${{ vars.CONFIG }}
       run: |
         python3 - <<'PY'
         import ipaddress
