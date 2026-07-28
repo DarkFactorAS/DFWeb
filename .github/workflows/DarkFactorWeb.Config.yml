@@ -3,7 +3,7 @@
 # Change the variables in this section to match your project
 #
 
-name: DarkFactor Web - Config File Generation
+name: DFWeb - Create Config
 
 defaults:
   run:
@@ -37,7 +37,7 @@ on:
 
 jobs:
 
-  build:
+  create-config:
 
     permissions:
       contents: read
@@ -81,7 +81,6 @@ jobs:
         template = os.environ.get("CONFIG_TEMPLATE", "")
         if not template.strip():
             print("CONFIG template is empty. Set repository/environment variable 'CONFIG'.", file=sys.stderr)
-            sys.exit(1)
 
         db_server = os.environ.get("DATABASE_SERVER", "").strip()
         try:
