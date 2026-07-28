@@ -136,7 +136,8 @@ jobs:
     - name: Update version in version file
       if: inputs.versionfile != ''
       run: |
-        sed -i 's/Version = "[^"]*";/Version = "${{ steps.get-version.outputs.version }}";/' "${{ inputs.project_path }}/${{ inputs.versionfile }}"
+        VERSION="${{ steps.get-version.outputs.version }}"
+        sed -i "s/Version = \"[^\"]*\";/Version = \"$VERSION\";/" "${{ inputs.project_path }}/${{ inputs.versionfile }}"
 
     # Set up Docker Buildx (Required for BuildKit features)
     - name: Set up Docker Buildx
