@@ -144,6 +144,13 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.NUGET_TOKEN }}
 
+    - name: Set image name
+      id: set_image_name
+      run: |
+        echo "IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ inputs.project_name }}:latest" >> $GITHUB_OUTPUT
+      outputs:
+        IMAGE_NAME: ${{ steps.set_image_name.outputs.IMAGE_NAME }}
+       
     # Build and push image with native GHA caching
     - name: Build and push
       uses: docker/build-push-action@v6
