@@ -28,6 +28,10 @@ permissions:
 jobs:
 
   deploy:
+
+    # Timeout for the job
+    timeout-minutes: 5
+
     runs-on: self-hosted
 
     env:
@@ -46,11 +50,7 @@ jobs:
         CONFIG="${CONFIG/DATABASE.USERNAME/${{ secrets.DATABASE_USERNAME }}}"
         CONFIG="${CONFIG/DATABASE.PASSWORD/${{ secrets.DATABASE_PASSWORD }}}"
         CONFIG="${CONFIG/DATABASE.NAME/${{ vars.DATABASE_NAME }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
+        CONFIG >> "$GITHUB_ENV"
 
     # Replace additional values in config file
     - name: Replace account server values in config file
@@ -58,22 +58,18 @@ jobs:
       run: |
         CONFIG="${CONFIG/ACCOUNTSERVER.URL/${{ secrets.ACCOUNTSERVER_URL }}}"
         CONFIG="${CONFIG/ACCOUNTSERVER.CLIENTSECRET/${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
+        CONFIG >> "$GITHUB_ENV"
 
     # Replace additional values in config file
     - name: Replace bug report server values in config file
       if: contains(inputs.config_settings, 'bugreportweb')
       run: |
         CONFIG="${CONFIG/BUGREPORTSERVER.URL/${{ vars.BUGREPORTSERVER_URL }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
+        CONFIG >> "$GITHUB_ENV"
+
+    - name: Verify required secrets and variables are set
+      run: |
+        printf '%s\n' "$CONFIG"
 
     # Create the config file
     - name: Create config file
