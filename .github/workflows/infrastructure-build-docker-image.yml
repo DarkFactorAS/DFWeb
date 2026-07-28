@@ -1,0 +1,145 @@
+#
+# Build Deploy file for Docker container
+#
+
+#
+# Common variables and secrets
+#   Environment
+#     secrets.DATABASE_PASSWORD
+#     vars.DATABASE_NAME
+#     vars.DATABASE_PORT
+#     vars.EXTERNAL_PORT
+#   Repository:
+#     secrets.DATABASE_USERNAME
+#   Organization:
+#     vars.DATABASE_SERVER
+#
+
+# Account variables and secrets (optional, only if using account server)
+#   Environment
+#     secrets.ACCOUNTSERVER_URL
+#     secrets.ACCOUNTSERVER_CLIENTSECRET
+
+name: General - Deploy Server Docker Container
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: .
+
+on:
+  workflow_call:
+    inputs:
+      project_path:
+        required: false
+        default: "."
+        type: string
+      project_name:
+        required: true
+        type: string
+      dockerfile:
+        required: false
+        default: "Dockerfile"
+        type: string
+      versionfile:
+        required: false
+        default: ""
+        type: string
+      runner_label:
+        type: string
+        description: "The GitHub Actions runner label used for runs-on."
+        required: false
+        default: ubuntu-latest
+
+jobs:
+  build:
+
+    # Timeout for the job
+    timeout-minutes: 15
+
+    # Static variables used in the workflow
+    env:
+      TIMESTAMP: ${{ github.sha }}
+     
+    # To be able to deploy on the local server
+    runs-on: ${{ inputs.runner_label }}
+
+    steps:
+
+    #
+    # Verify required secrets and variables are set
+    #
+    - name: Verify secrets and variables are set
+      run: |
+        if [ -z "${{ secrets.NUGET_USERNAME }}" ] || [ -z "${{ secrets.NUGET_TOKEN }}" ]; then
+          echo "One or more required secrets are not set. Please check the organization and environment secrets."
+          exit 1
+        fi
+        
+    - name: Convert project name to lowercase for Docker name
+      id: convert_to_lowercase
+      run: |
+        UPPERCASE_VAR="${{ inputs.project_name }}"
+        IMAGE_NAME="${UPPERCASE_VAR,,}" # The ,, converts to lowercase
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+
+    - name: Convert project name to lowercase for Docker name
+      id: lowercase_repository
+      run: |
+        UPPERCASE_VAR="${{ github.repository }}"
+        REPOSITORY_NAME="${UPPERCASE_VAR,,}" # The ,, converts to lowercase
+        echo "REPOSITORY_NAME=$REPOSITORY_NAME" >> $GITHUB_OUTPUT
+
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    # Get the version from the program file
+    # We want the format to be 
+    # Major version from the file + short sha + date
+    - name: Get version from Program.cs (if specified)
+      if: inputs.versionfile != ''
+      id: get-version
+      run: |
+        CURRENT_VERSION=$(grep -o 'Version = "[^"]*"' "${{ inputs.project_path }}/${{ inputs.versionfile }}" | cut -d'"' -f2)
+        IFS='.' read -ra ADDR <<< "$CURRENT_VERSION"
+        MAJOR=${ADDR[0]}
+        DATE="$(date +%y%m%d)"
+        FULL_SHA=${{ github.sha }}
+        SHORT_SHA=$(echo "${FULL_SHA}" | cut -c1-6)
+        VERSION="$MAJOR.$DATE.$SHORT_SHA"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Determined version: $VERSION"
+
+    # Update the version in the program file
+    - name: Update version in version file
+      if: inputs.versionfile != ''
+      run: |
+        sed -i 's/Version = "[^"]*";/Version = "${{ steps.get-version.outputs.version }}";/' "${{ inputs.project_path }}/${{ inputs.versionfile }}"
+
+    # Set up Docker Buildx (Required for BuildKit features)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    # Authenticate to your Registry
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.NUGET_TOKEN }}
+
+    # Build and push image with native GHA caching
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        file: ${{ inputs.project_path }}/${{ inputs.dockerfile }}
+        tags: ghcr.io/${{ steps.lowercase_repository.outputs.REPOSITORY_NAME }}/${{ steps.convert_to_lowercase.outputs.IMAGE_NAME }}-image:latest
+        secrets: |
+          "NUGET_USERNAME=${{ secrets.NUGET_USERNAME }}"
+          "NUGET_TOKEN=${{ secrets.NUGET_TOKEN }}"
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

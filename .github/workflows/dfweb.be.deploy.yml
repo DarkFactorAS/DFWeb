@@ -36,7 +36,7 @@ jobs:
   build-docker-image:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Build Docker Image
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-build-docker-image.yml@v1.7
+    uses: ./.github/workflows/infrastructure-build-docker-image.yml
     with:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
