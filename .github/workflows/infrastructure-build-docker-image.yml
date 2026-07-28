@@ -52,9 +52,15 @@ on:
         description: "The GitHub Actions runner label used for runs-on."
         required: false
         default: ubuntu-latest
+    outputs:
+      docker_image_name:
+        description: "Fully-qualified image name pushed to GHCR"
+        value: ${{ jobs.build.outputs.docker_image_name }}
 
 jobs:
   build:
+    outputs:
+      docker_image_name: ${{ steps.set_image_name.outputs.image_name }}
 
     # Timeout for the job
     timeout-minutes: 15
@@ -147,9 +153,7 @@ jobs:
     - name: Set image name
       id: set_image_name
       run: |
-        echo "IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ inputs.project_name }}:latest" >> $GITHUB_OUTPUT
-      outputs:
-        IMAGE_NAME: ${{ steps.set_image_name.outputs.IMAGE_NAME }}
+        echo "image_name=ghcr.io/${{ steps.lowercase_repository.outputs.REPOSITORY_NAME }}/${{ steps.convert_to_lowercase.outputs.IMAGE_NAME }}-image:latest" >> $GITHUB_OUTPUT
        
     # Build and push image with native GHA caching
     - name: Build and push
@@ -158,7 +162,7 @@ jobs:
         context: .
         push: true
         file: ${{ inputs.project_path }}/${{ inputs.dockerfile }}
-        tags: ghcr.io/${{ steps.lowercase_repository.outputs.REPOSITORY_NAME }}/${{ steps.convert_to_lowercase.outputs.IMAGE_NAME }}-image:latest
+        tags: ${{ steps.set_image_name.outputs.image_name }}
         secrets: |
           nuget_username=${{ steps.resolve-nuget-username.outputs.username }}
           nuget_token=${{ secrets.NUGET_TOKEN }}

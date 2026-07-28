@@ -36,8 +36,6 @@ jobs:
   build-docker-image:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Build Docker Image
-    outputs:
-      docker_image_name: ${{ steps.set_image_name.outputs.IMAGE_NAME }}
     uses: ./.github/workflows/infrastructure-build-docker-image.yml
     with:
       project_name: "DFWeb.FR.BootStrap"
@@ -53,6 +51,7 @@ jobs:
     with:
       environment: staging
       external_port: 8500
+      project_name: "DFWeb.FR.BootStrap"
       image_name: ${{ needs.build-docker-image.outputs.docker_image_name }}
     secrets: inherit
 

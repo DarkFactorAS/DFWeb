@@ -154,8 +154,8 @@ jobs:
         password: ${{ secrets.NUGET_TOKEN }}
 
     - name: Pull the Docker image
-        run: |
-          docker pull ghcr.io/${{ github.repository_owner }}/${{ inputs.image_name }}
+      run: |    
+        docker pull ${{ inputs.image_name }}
 
     - name: Stop old Docker container
       run: docker stop ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }} || true
