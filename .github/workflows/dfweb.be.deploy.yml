@@ -37,8 +37,8 @@ jobs:
     name: Run Staging Playwright Tests
     runs-on: ubuntu-latest
 
-    environment:
-      DFWEB_BASE_URL: https://dfweb-staging.darkfactoras.com
+    env:
+      DFWEB_BASE_URL: http://127.0.0.1:5000
 
     steps:
       - uses: actions/checkout@v6
