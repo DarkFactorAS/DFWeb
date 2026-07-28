@@ -42,6 +42,11 @@ jobs:
 
     steps:
 
+    - name: Any Name Bash Test Step
+      shell: bash
+      run: |
+        echo "CONFIG: $CONFIG"
+
     # Replace basic values
     - name: Replace basic values in config file
       run: |
