@@ -1,0 +1,81 @@
+#
+# Build Deploy file for Docker container
+# Change the variables in this section to match your project
+#
+
+name: DarkFactor Web - Config File Generation
+
+defaults:
+  run:
+    working-directory: .
+
+on:
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+
+  deploy:
+    runs-on: self-hosted
+
+    env:
+      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
+      CONFIG: ${{ vars.CONFIG }}
+      CONFIG_FILE: appsettings.${{ inputs.environment }}.json
+      CONFIG_PATH: "."
+
+    steps:
+
+    # Replace basic values
+    - name: Replace basic values in config file
+      run: |
+        CONFIG="${CONFIG/DATABASE.SERVER/${{ vars.DATABASE_SERVER }}}"
+        CONFIG="${CONFIG/DATABASE.PORT/${{ vars.DATABASE_PORT }}}"
+        CONFIG="${CONFIG/DATABASE.USERNAME/${{ secrets.DATABASE_USERNAME }}}"
+        CONFIG="${CONFIG/DATABASE.PASSWORD/${{ secrets.DATABASE_PASSWORD }}}"
+        CONFIG="${CONFIG/DATABASE.NAME/${{ vars.DATABASE_NAME }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
+
+    # Replace additional values in config file
+    - name: Replace account server values in config file
+      if: contains(inputs.config_settings, 'accountserver')  
+      run: |
+        CONFIG="${CONFIG/ACCOUNTSERVER.URL/${{ secrets.ACCOUNTSERVER_URL }}}"
+        CONFIG="${CONFIG/ACCOUNTSERVER.CLIENTSECRET/${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
+
+    # Replace additional values in config file
+    - name: Replace bug report server values in config file
+      if: contains(inputs.config_settings, 'bugreportweb')
+      run: |
+        CONFIG="${CONFIG/BUGREPORTSERVER.URL/${{ vars.BUGREPORTSERVER_URL }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
+
+    # Create the config file
+    - name: Create config file
+      run: |
+        printf '%s\n' "$CONFIG" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
