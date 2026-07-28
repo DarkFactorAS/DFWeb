@@ -20,7 +20,7 @@
 #     secrets.ACCOUNTSERVER_URL
 #     secrets.ACCOUNTSERVER_CLIENTSECRET
 
-name: General - Deploy Server Docker Container
+name: General - Build Docker Image
 
 permissions:
   contents: read
