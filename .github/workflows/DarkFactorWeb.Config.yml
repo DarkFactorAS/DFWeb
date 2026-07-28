@@ -50,9 +50,6 @@ jobs:
     # Timeout for the job
     timeout-minutes: 5
 
-    secrets:
-      inherit
-
     runs-on: self-hosted
 
     env:
