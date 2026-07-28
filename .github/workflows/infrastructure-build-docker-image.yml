@@ -24,6 +24,7 @@ name: General - Build Docker Image
 
 permissions:
   contents: read
+  actions: write 
 
 defaults:
   run:
