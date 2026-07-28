@@ -126,6 +126,11 @@ jobs:
         CONFIG="${CONFIG/DATABASE.USERNAME/${{ secrets.DATABASE_USERNAME }}}"
         CONFIG="${CONFIG/DATABASE.PASSWORD/${{ secrets.DATABASE_PASSWORD }}}"
         CONFIG="${CONFIG/DATABASE.NAME/${{ vars.DATABASE_NAME }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
 
     # Replace additional values in config file
     - name: Replace account server values in config file
@@ -133,17 +138,27 @@ jobs:
       run: |
         CONFIG="${CONFIG/ACCOUNTSERVER.URL/${{ secrets.ACCOUNTSERVER_URL }}}"
         CONFIG="${CONFIG/ACCOUNTSERVER.CLIENTSECRET/${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
 
     # Replace additional values in config file
     - name: Replace bug report server values in config file
       if: contains(inputs.config_settings, 'bugreportweb')
       run: |
         CONFIG="${CONFIG/BUGREPORTSERVER.URL/${{ vars.BUGREPORTSERVER_URL }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
 
     # Create the config file
     - name: Create config file
       run: |
-        echo "$CONFIG" > ${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}
+        printf '%s\n' "$CONFIG" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
 
     # Log in to GitHub Container Registry
     - name: Log in to GitHub Container Registry
