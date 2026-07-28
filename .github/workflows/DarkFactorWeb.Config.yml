@@ -21,61 +21,155 @@ on:
         options:
           - staging
           - production
+      config_settings:
+        description: 'Optional flags: accountserver,bugreportweb'
+        required: false
+        default: ''
+        type: string
+      debug:
+        description: 'Print config diagnostics'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 jobs:
 
-  deploy:
+  build:
+
+    # Timeout for the job
+    timeout-minutes: 5
+
     runs-on: self-hosted
 
     env:
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
-      CONFIG: ${{ vars.CONFIG }}
       CONFIG_FILE: appsettings.${{ inputs.environment }}.json
       CONFIG_PATH: "."
 
     steps:
 
-    # Replace basic values
-    - name: Replace basic values in config file
-      run: |
-        CONFIG="${CONFIG/DATABASE.SERVER/${{ vars.DATABASE_SERVER }}}"
-        CONFIG="${CONFIG/DATABASE.PORT/${{ vars.DATABASE_PORT }}}"
-        CONFIG="${CONFIG/DATABASE.USERNAME/${{ secrets.DATABASE_USERNAME }}}"
-        CONFIG="${CONFIG/DATABASE.PASSWORD/${{ secrets.DATABASE_PASSWORD }}}"
-        CONFIG="${CONFIG/DATABASE.NAME/${{ vars.DATABASE_NAME }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
+    - name: Checkout repository
+      uses: actions/checkout@v4      
 
-    # Replace additional values in config file
-    - name: Replace account server values in config file
-      if: contains(inputs.config_settings, 'accountserver')  
+    - name: Generate config file from template
+      env:
+        CONFIG_TEMPLATE: ${{ vars.CONFIG }}
+        CONFIG_SETTINGS: ${{ inputs.config_settings }}
+        DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
+        DATABASE_PORT: ${{ vars.DATABASE_PORT }}
+        DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+        DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        ACCOUNTSERVER_URL: ${{ secrets.ACCOUNTSERVER_URL }}
+        ACCOUNTSERVER_CLIENTSECRET: ${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}
+        BUGREPORTSERVER_URL: ${{ vars.BUGREPORTSERVER_URL }}
       run: |
-        CONFIG="${CONFIG/ACCOUNTSERVER.URL/${{ secrets.ACCOUNTSERVER_URL }}}"
-        CONFIG="${CONFIG/ACCOUNTSERVER.CLIENTSECRET/${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
+        python3 - <<'PY'
+        import ipaddress
+        import json
+        import os
+        import pathlib
+        import re
+        import sys
 
-    # Replace additional values in config file
-    - name: Replace bug report server values in config file
-      if: contains(inputs.config_settings, 'bugreportweb')
-      run: |
-        CONFIG="${CONFIG/BUGREPORTSERVER.URL/${{ vars.BUGREPORTSERVER_URL }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
+        template = os.environ.get("CONFIG_TEMPLATE", "")
+        if not template.strip():
+            print("CONFIG template is empty. Set repository/environment variable 'APPCONFIG'.", file=sys.stderr)
+            sys.exit(1)
 
-    # Create the config file
-    - name: Create config file
+        db_server = os.environ.get("DATABASE_SERVER", "").strip()
+        try:
+            ipaddress.ip_address(db_server)
+        except ValueError:
+          print(f"Warning: DATABASE_SERVER is missing or not an IP address: {db_server!r}", file=sys.stderr)
+
+        config_settings = os.environ.get("CONFIG_SETTINGS", "")
+        result = template
+
+        replacements = {
+            "DATABASE.SERVER": os.environ.get("DATABASE_SERVER", ""),
+            "DATABASE.PORT": os.environ.get("DATABASE_PORT", ""),
+            "DATABASE.USERNAME": os.environ.get("DATABASE_USERNAME", ""),
+            "DATABASE.PASSWORD": os.environ.get("DATABASE_PASSWORD", ""),
+            "DATABASE.NAME": os.environ.get("DATABASE_NAME", ""),
+        }
+
+        if "accountserver" in config_settings:
+            replacements["ACCOUNTSERVER.URL"] = os.environ.get("ACCOUNTSERVER_URL", "")
+            replacements["ACCOUNTSERVER.CLIENTSECRET"] = os.environ.get("ACCOUNTSERVER_CLIENTSECRET", "")
+
+        if "bugreportweb" in config_settings:
+            replacements["BUGREPORTSERVER.URL"] = os.environ.get("BUGREPORTSERVER_URL", "")
+
+        for token, value in replacements.items():
+            if value:
+                result = result.replace(token, value)
+
+        unresolved_required = [
+            "DATABASE.SERVER",
+            "DATABASE.PORT",
+            "DATABASE.USERNAME",
+            "DATABASE.PASSWORD",
+            "DATABASE.NAME",
+        ]
+        missing = [token for token in unresolved_required if token in result]
+        if missing:
+          print(f"Warning: unresolved placeholders in CONFIG: {', '.join(missing)}", file=sys.stderr)
+
+        # Validate that generated output is valid JSON.
+        try:
+            json.loads(result)
+        except json.JSONDecodeError as exc:
+          print(f"Warning: generated CONFIG is not valid JSON: {exc}", file=sys.stderr)
+
+        output_path = pathlib.Path(os.environ["CONFIG_PATH"]) / os.environ["CONFIG_FILE"]
+        output_path.write_text(result + "\n", encoding="utf-8")
+
+        with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+            env_file.write("CONFIG<<EOF\n")
+            env_file.write(result)
+            env_file.write("\nEOF\n")
+
+        print(f"Wrote config file: {output_path}")
+        PY
+
+    - name: Debug generated config
+      if: ${{ inputs.debug }}
+      env:
+        CONFIG_TEMPLATE: ${{ vars.CONFIG }}
       run: |
-        printf '%s\n' "$CONFIG" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
+        python3 - <<'PY'
+        import ipaddress
+        import json
+        import os
+        import pathlib
+        import re
+        import sys
+
+        output_path = pathlib.Path(os.environ["CONFIG_PATH"]) / os.environ["CONFIG_FILE"]
+        text = output_path.read_text(encoding="utf-8")
+        data = json.loads(text)
+        db_server = data.get("DatabaseConnection", {}).get("Server", "")
+        try:
+            ipaddress.ip_address(db_server)
+            ip_ok = True
+        except ValueError:
+            ip_ok = False
+
+        # Redact sensitive fields before printing preview.
+        preview = re.sub(r'("Password"\s*:\s*")[^"]*(")', r'\1***\2', text)
+        preview = re.sub(r'("ClientSecret"\s*:\s*")[^"]*(")', r'\1***\2', preview)
+
+        print(f"Generated file: {output_path}")
+        print(f"DatabaseConnection.Server: {db_server}")
+        print(f"DatabaseConnection.Server is IP: {ip_ok}")
+        print("Preview (redacted):")
+        print(preview)
+
+        if not ip_ok:
+            print("DatabaseConnection.Server is not an IP address.", file=sys.stderr)
+            sys.exit(1)
+        PY

@@ -30,87 +30,46 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
-  staging-automated-tests:
+
+  build-docker-image:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
-    name: Run Staging Playwright Tests
-    runs-on: ubuntu-latest
-
-    env:
-      DFWEB_BASE_URL: ${{ vars.DFWEB_BASE_URL }}
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v6
-        with:
-          dotnet-version: 9.0.x
-
-      - name: Configure DarkFactorAS NuGet source
-        run: dotnet nuget update source DarkFactorAS --username ${{ vars.NUGET_USERNAME }} --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "DFWeb.BE/NuGet.config"
-
-      - name: Restore and build frontend app
-        run: |
-          dotnet restore DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configfile DFWeb.BE/NuGet.config
-          dotnet build DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configuration Release --no-restore
-
-      - name: Restore and build Playwright tests
-        run: |
-          dotnet restore DFAutomatedTests/DFAutomatedTests.csproj --configfile DFWeb.BE/NuGet.config
-          dotnet build DFAutomatedTests/DFAutomatedTests.csproj --configuration Release --no-restore
-
-      - name: Install Playwright browser dependencies
-        run: pwsh DFAutomatedTests/bin/Release/net9.0/playwright.ps1 install --with-deps chromium
-
-      - name: Start application for UI tests
-        run: |
-          nohup dotnet run --project DFWeb.FR.BootStrap/DFWeb.FR.BootStrap.csproj --configuration Release --urls "${{ env.DFWEB_BASE_URL }}" > /tmp/dfweb-bootstrap.log 2>&1 &
-          echo $! > /tmp/dfweb-bootstrap.pid
-
-      - name: Wait for application readiness
-        run: |
-          for attempt in {1..60}; do
-            if curl --silent --show-error --fail "${{ env.DFWEB_BASE_URL }}" > /dev/null; then
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Application failed to become ready. Showing recent logs:"
-          tail -100 /tmp/dfweb-bootstrap.log || true
-          exit 1
-
-      - name: Run Playwright automated tests
-        env:
-          DFWEB_BASE_URL: ${{ env.DFWEB_BASE_URL }}
-        run: dotnet test DFAutomatedTests/DFAutomatedTests.csproj --configuration Release --no-build --logger "console;verbosity=normal"
-
-      - name: Stop application
-        if: always()
-        run: |
-          if [ -f /tmp/dfweb-bootstrap.pid ]; then
-            kill "$(cat /tmp/dfweb-bootstrap.pid)" || true
-          fi
+    name: Build Docker Image
+    uses: ./.github/workflows/infrastructure-build-docker-image.yml
+    with:
+      project_name: "DFWeb.FR.BootStrap"
+      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
+      versionfile: "DFWeb.FR.BootStrap/Program.cs"
+    secrets: inherit
 
   staging:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Deploy to Staging
-    needs: [staging-automated-tests]
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.7
+    needs: [build-docker-image]
+    uses: ./.github/workflows/infrastructure-server-deploy.yml
     with:
       environment: staging
       external_port: 8500
       project_name: "DFWeb.FR.BootStrap"
-      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
-      versionfile: "DFWeb.FR.BootStrap/Program.cs"
-      config_path: "/DFWeb.FR.BootStrap"
+      image_name: ${{ needs.build-docker-image.outputs.docker_image_name }}
     secrets: inherit
-      
+
+  staging-automated-tests:
+    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
+    name: Run Automated Tests
+    needs: [staging]
+    uses: ./.github/workflows/infrastructure-automated-tests.yml
+    with:
+      project_name: "DFAutomatedTests"
+      project_path: "DFAutomatedTests"
+      config_path: "DFWeb.BE"
+    secrets: inherit
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
-    needs: [staging]
+    needs: [staging-automated-tests]
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.7
     with:
       environment: production

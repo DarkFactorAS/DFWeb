@@ -1,0 +1,190 @@
+#
+# Build Deploy file for Docker container
+#
+
+#
+# Common variables and secrets
+#   Environment
+#     secrets.DATABASE_PASSWORD
+#     vars.DATABASE_NAME
+#     vars.DATABASE_PORT
+#     vars.EXTERNAL_PORT
+#   Repository:
+#     secrets.DATABASE_USERNAME
+#   Organization:
+#     vars.DATABASE_SERVER
+#
+
+# Account variables and secrets (optional, only if using account server)
+#   Environment
+#     secrets.ACCOUNTSERVER_URL
+#     secrets.ACCOUNTSERVER_CLIENTSECRET
+
+name: General - Deploy Server Docker Container
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: .
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      external_port:
+        required: true
+        default: 0
+        type: number
+      project_path:
+        required: false
+        default: "."
+        type: string
+      project_name:
+        required: true
+        type: string
+      config_settings:
+        required: false
+        default: ""
+        type: string
+      versionfile:
+        required: false
+        default: ""
+        type: string
+      config_path:
+        required: false
+        default: ""
+        type: string
+      image_name:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+
+    # Timeout for the job
+    timeout-minutes: 15
+
+    # Static variables used in the workflow
+    env:
+      TIMESTAMP: ${{ github.sha }}
+      INTERNAL_PORT: 8080
+      EXTERNAL_PORT: ${{ inputs.external_port }}
+      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
+      CONFIG: ${{ vars.CONFIG }}
+      CONFIG_FILE: appsettings.${{ inputs.environment }}.json
+      CONFIG_PATH: "./"
+
+    # Required permissions to read packages
+    permissions:
+      contents: read
+      packages: read
+
+    # To be able to deploy on the local server
+    runs-on: self-hosted
+
+    environment: ${{ inputs.environment }}
+
+    steps:
+
+    #
+    # Verify required secrets and variables are set
+    #
+    - name: Verify secrets and variables are set
+      run: |
+        if [ -z "${{ secrets.NUGET_USERNAME }}" ] || [ -z "${{ secrets.NUGET_TOKEN }}" ]; then
+          echo "One or more required secrets are not set. Please check the organization and environment secrets."
+          exit 1
+        fi
+
+    - name: Verify DB secrets
+      if: ${{ !contains(inputs.config_settings, 'skipdbcheck') }}  
+      run: |
+        if [ -z "${{ vars.DATABASE_SERVER }}" ] || [ -z "${{ vars.DATABASE_PORT }}" ] || [ -z "${{ secrets.DATABASE_USERNAME }}" ] || [ -z "${{ secrets.DATABASE_PASSWORD }}" ]; then
+          echo "Database settings are not set. Please check the secrets."
+          exit 1
+        fi
+        
+    - name: Convert project name to lowercase for Docker name
+      id: convert_to_lowercase
+      run: |
+        UPPERCASE_VAR="${{ inputs.project_name }}"-${{ inputs.environment }}
+        DOCKER_NAME="${UPPERCASE_VAR,,}" # The ,, converts to lowercase
+        echo "DOCKER_NAME=$DOCKER_NAME" >> $GITHUB_OUTPUT
+
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    # Replace basic values
+    - name: Replace basic values in config file
+      run: |
+        CONFIG="${CONFIG/DATABASE.SERVER/${{ vars.DATABASE_SERVER }}}"
+        CONFIG="${CONFIG/DATABASE.PORT/${{ vars.DATABASE_PORT }}}"
+        CONFIG="${CONFIG/DATABASE.USERNAME/${{ secrets.DATABASE_USERNAME }}}"
+        CONFIG="${CONFIG/DATABASE.PASSWORD/${{ secrets.DATABASE_PASSWORD }}}"
+        CONFIG="${CONFIG/DATABASE.NAME/${{ vars.DATABASE_NAME }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
+
+    # Replace additional values in config file
+    - name: Replace account server values in config file
+      if: contains(inputs.config_settings, 'accountserver')  
+      run: |
+        CONFIG="${CONFIG/ACCOUNTSERVER.URL/${{ secrets.ACCOUNTSERVER_URL }}}"
+        CONFIG="${CONFIG/ACCOUNTSERVER.CLIENTSECRET/${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
+
+    # Replace additional values in config file
+    - name: Replace bug report server values in config file
+      if: contains(inputs.config_settings, 'bugreportweb')
+      run: |
+        CONFIG="${CONFIG/BUGREPORTSERVER.URL/${{ vars.BUGREPORTSERVER_URL }}}"
+        {
+          echo "CONFIG<<EOF"
+          echo "$CONFIG"
+          echo "EOF"
+        } >> "$GITHUB_ENV"
+
+    # Create the config file
+    - name: Create config file
+      run: |
+        printf '%s\n' "$CONFIG" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
+
+    # Log in to GitHub Container Registry
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.NUGET_TOKEN }}
+
+    - name: Pull the Docker image
+      run: |    
+        docker pull ${{ inputs.image_name }}
+
+    - name: Stop old Docker container
+      run: docker stop ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }} || true
+
+    - name: Delete old Docker container
+      run: docker rm ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }} || true
+
+    - name: Run Docker container
+      run: |
+        docker run \
+          -e ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }} \
+          -v ${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}:/app/Config/${{ env.CONFIG_FILE }} \
+          --detach \
+          --publish ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} \
+          --name ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }} \
+          --restart unless-stopped \
+          ${{ inputs.image_name }}

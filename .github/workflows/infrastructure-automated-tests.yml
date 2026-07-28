@@ -1,0 +1,66 @@
+#
+# Run and test the application in a staging environment before deploying to production.
+#
+
+name: General - Infrastructure Automated Tests
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: .
+
+on:
+  workflow_call:
+    inputs:
+      project_path:
+        required: false
+        default: "."
+        type: string
+      project_name:
+        required: true
+        type: string
+      config_path:
+        required: false
+        default: ""
+        type: string
+      runner_label:
+        type: string
+        description: "The GitHub Actions runner label used for runs-on."
+        required: false
+        default: ubuntu-latest
+jobs:
+
+  automated-tests:
+
+    # Timeout for the job
+    timeout-minutes: 15
+
+    if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
+    name: Run Staging Playwright Tests
+    runs-on: ${{ inputs.runner_label }}
+
+    env:
+      DFWEB_BASE_URL: ${{ vars.DFWEB_BASE_URL }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore and build Playwright tests
+        run: |
+          dotnet restore ${{ inputs.project_path }}/${{ inputs.project_name }}.csproj --configfile ${{ inputs.config_path }}/NuGet.config
+          dotnet build ${{ inputs.project_path }}/${{ inputs.project_name }}.csproj --configuration Release --no-restore
+
+      - name: Install Playwright browser dependencies
+        run: pwsh ${{ inputs.project_path }}/bin/Release/net9.0/playwright.ps1 install --with-deps chromium
+
+      - name: Run Playwright automated tests
+        env:
+          DFWEB_BASE_URL: ${{ env.DFWEB_BASE_URL }}
+        run: dotnet test ${{ inputs.project_path }}/${{ inputs.project_name }}.csproj --configuration Release --no-build --logger "console;verbosity=normal"
