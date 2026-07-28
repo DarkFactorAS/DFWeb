@@ -26,6 +26,11 @@ on:
         required: false
         default: ''
         type: string
+      gen_config:
+        description: 'Generate config diagnostics'
+        required: false
+        default: false
+        type: boolean
       debug:
         description: 'Print config diagnostics'
         required: false
@@ -45,6 +50,9 @@ jobs:
     # Timeout for the job
     timeout-minutes: 5
 
+    secrets:
+      inherit
+
     runs-on: self-hosted
 
     env:
@@ -58,7 +66,14 @@ jobs:
 #    - name: Checkout repository
 #      uses: actions/checkout@v4      
 
+    # Create the config file
+    - name: Create config file
+      if: ${{ inputs.debug }}
+      run: |
+        printf '%s\n' "$CONFIG_TEMPLATE" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
+
     - name: Generate config file from template
+      if: ${{ inputs.gen_config == 'true' }}
       env:
         CONFIG_SETTINGS: ${{ inputs.config_settings }}
         DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
