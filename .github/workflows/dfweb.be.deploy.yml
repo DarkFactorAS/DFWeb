@@ -70,7 +70,7 @@ jobs:
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
-    needs: [staging]
+    needs: [staging-automated-tests]
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.7
     with:
       environment: production

@@ -54,7 +54,7 @@ jobs:
 
       - name: Restore and build Playwright tests
         run: |
-          dotnet restore ${{ inputs.project_path }}/${{ inputs.project_name }}.csproj --configfile ${{ inputs.project_path }}/NuGet.config
+          dotnet restore ${{ inputs.project_path }}/${{ inputs.project_name }}.csproj --configfile ${{ inputs.config_path }}/NuGet.config
           dotnet build ${{ inputs.project_path }}/${{ inputs.project_name }}.csproj --configuration Release --no-restore
 
       - name: Install Playwright browser dependencies
