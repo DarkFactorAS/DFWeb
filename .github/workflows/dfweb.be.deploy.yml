@@ -33,9 +33,9 @@ permissions:
 
 jobs:
 
-  build-docker-image-staging:
+  build-docker-image:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
-    name: Build Docker Image for Staging
+    name: Build Docker Image
     uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-build-docker-image.yml@v1.7
     with:
       project_name: "DFWeb.FR.BootStrap"
@@ -46,6 +46,7 @@ jobs:
   staging-automated-tests:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Run Staging Playwright Tests
+    needs: [build-docker-image]
     runs-on: ubuntu-latest
 
     env:
