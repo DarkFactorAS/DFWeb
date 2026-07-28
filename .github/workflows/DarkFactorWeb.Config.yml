@@ -48,7 +48,7 @@ jobs:
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
       CONFIG_FILE: appsettings.${{ inputs.environment }}.json
       CONFIG_PATH: "."
-      CONFIG_TEMPLATE: ${{ vars.CONFIG }}
+      CONFIG_TEMPLATE: ${{ vars.APPCONFIG }}
 
     steps:
 
