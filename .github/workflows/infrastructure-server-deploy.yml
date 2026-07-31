@@ -26,7 +26,7 @@ on:
         type: string
       config_path:
         required: false
-        default: "/var/www/"
+        default: "~/www-config"
         type: string
       image_name:
         required: true
@@ -99,7 +99,7 @@ jobs:
       run: |
         docker run \
           -e ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }} \
-          -v ${{ env.CONFIG_PATH }}:/app/Config/ \
+          -v ${{ env.CONFIG_PATH }}:/app/Config \
           --detach \
           --publish ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} \
           --name ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }} \

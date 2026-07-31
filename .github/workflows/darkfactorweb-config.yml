@@ -54,6 +54,8 @@ on:
         type: boolean
 
   push:
+    paths:
+      - .github/workflows/darkfactorweb-config.yml
 
 jobs:
 
@@ -72,7 +74,7 @@ jobs:
     env:
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
       CONFIG_TEMPLATE: ${{ vars.CONFIG }}
-      CONFIG_PATH: "/var/www/dfweb"
+      CONFIG_PATH: "~/dfweb-config"
       CONFIG_SETTINGS: ${{ inputs.config_settings }}
 
     steps:

@@ -55,7 +55,7 @@ jobs:
       external_port: 8500
       project_name: "DFWeb.FR.BootStrap"
       image_name: ${{ needs.build-docker-image.outputs.docker_image_name }}
-      config_path: "/var/www/dfweb/"
+      config_path: "~/dfweb-config/"
     secrets: inherit
 
   staging-automated-tests:
@@ -79,5 +79,5 @@ jobs:
       external_port: 9500
       project_name: "DFWeb.FR.BootStrap"
       image_name: ${{ needs.build-docker-image.outputs.docker_image_name }}
-      config_path: "/var/www/dfweb/"
+      config_path: "~/dfweb-config/"
     secrets: inherit
