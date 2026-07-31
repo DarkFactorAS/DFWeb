@@ -54,9 +54,8 @@ on:
         type: boolean
 
   push:
-    inputs:
-      environment:
-        name: 'staging' 
+    environment:
+      name: 'staging' 
 
 #permissions:
 #  contents: read
