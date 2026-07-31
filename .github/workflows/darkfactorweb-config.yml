@@ -3,7 +3,28 @@
 # Change the variables in this section to match your project
 #
 
+#
+# Common variables and secrets
+#   Environment
+#     secrets.DATABASE_PASSWORD
+#     vars.DATABASE_NAME
+#     vars.DATABASE_PORT
+#     vars.EXTERNAL_PORT
+#   Repository:
+#     secrets.DATABASE_USERNAME
+#   Organization:
+#     vars.DATABASE_SERVER
+#
+
+# Account variables and secrets (optional, only if using account server)
+#   Environment
+#     secrets.ACCOUNTSERVER_URL
+#     secrets.ACCOUNTSERVER_CLIENTSECRET
+
 name: DFWeb - Create Config
+
+permissions:
+  contents: read
 
 defaults:
   run:
@@ -26,23 +47,21 @@ on:
         required: false
         default: ''
         type: string
-      gen_config:
-        description: 'Generate config diagnostics'
-        required: false
-        default: false
-        type: boolean
       debug:
         description: 'Print config diagnostics'
         required: false
         default: false
         type: boolean
 
-#permissions:
-#  contents: read
+  push:
+    paths:
+      - .github/workflows/darkfactorweb-config.yml
 
 jobs:
 
-  create-config:
+  deploy:
+    environment:
+      name: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
 
     permissions:
       contents: read
@@ -53,25 +72,34 @@ jobs:
     runs-on: self-hosted
 
     env:
-      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
-      CONFIG_FILE: appsettings.${{ inputs.environment }}.json
-      CONFIG_PATH: "."
+      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
       CONFIG_TEMPLATE: ${{ vars.CONFIG }}
+      CONFIG_PATH: "/home/darkfactor/dfweb-config"
+      CONFIG_SETTINGS: ${{ inputs.config_settings }}
 
     steps:
 
 #    - name: Checkout repository
 #      uses: actions/checkout@v4      
 
-    # Create the config file
-    - name: Create config file
-      if: ${{ inputs.debug }}
+    - name: Verify Config template
       run: |
-        printf '%s\n' "$CONFIG_TEMPLATE" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
+        if [ -z "${{ env.CONFIG_TEMPLATE }}" ]; then
+          echo "Config template is not set. Please check the repository and environment variables."
+          exit 1
+        fi
+
+    - name: Verify DB secrets
+      if: ${{ !contains(inputs.config_settings, 'skipdbcheck') }}  
+      run: |
+        if [ -z "${{ vars.DATABASE_SERVER }}" ] || [ -z "${{ vars.DATABASE_PORT }}" ] || [ -z "${{ secrets.DATABASE_USERNAME }}" ] || [ -z "${{ secrets.DATABASE_PASSWORD }}" ]; then
+          echo "Database settings are not set. Please check the secrets."
+          exit 1
+        fi
 
     - name: Generate config file from template
-      if: ${{ inputs.gen_config == 'true' }}
       env:
+        CONFIG_FILE: appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
         CONFIG_SETTINGS: ${{ inputs.config_settings }}
         DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE_PORT: ${{ vars.DATABASE_PORT }}

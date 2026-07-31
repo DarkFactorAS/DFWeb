@@ -64,7 +64,7 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
 
     - name: NuGet update
-      run: dotnet nuget add source --username ${{vars.NUGET_USERNAME}} --password ${{secrets.NUGET_TOKEN }} --store-password-in-clear-text --name DarkFactorAS "https://nuget.pkg.github.com/DarkFactorAS/index.json"
+      run: dotnet nuget add source --username ${{secrets.NUGET_USERNAME}} --password ${{secrets.NUGET_TOKEN }} --store-password-in-clear-text --name DarkFactorAS "https://nuget.pkg.github.com/DarkFactorAS/index.json"
     
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
