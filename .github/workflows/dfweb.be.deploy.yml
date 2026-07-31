@@ -72,7 +72,7 @@ jobs:
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
-    needs: [staging-automated-tests]
+    needs: [build-docker-image, staging-automated-tests]
     uses: ./.github/workflows/infrastructure-server-deploy.yml
     with:
       environment: production
