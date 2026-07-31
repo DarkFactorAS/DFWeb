@@ -33,7 +33,6 @@ defaults:
 on:
 
   workflow_dispatch:
-  push:
     inputs:
       environment:
         description: 'Environment to deploy to'
@@ -58,6 +57,10 @@ on:
         required: false
         default: false
         type: boolean
+
+  push:
+    environment:
+      name: 'staging'
 
 #permissions:
 #  contents: read
