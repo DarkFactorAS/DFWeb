@@ -53,10 +53,7 @@ on:
         default: false
         type: boolean
 
-#  push:
-
-#permissions:
-#  contents: read
+  push:
 
 jobs:
 
