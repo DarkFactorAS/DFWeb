@@ -47,11 +47,6 @@ on:
         required: false
         default: ''
         type: string
-      gen_config:
-        description: 'Generate config diagnostics'
-        required: false
-        default: false
-        type: boolean
       debug:
         description: 'Print config diagnostics'
         required: false
@@ -59,8 +54,9 @@ on:
         type: boolean
 
   push:
-    environment:
-      name: 'staging'
+    inputs:
+      environment:
+        name: 'staging' 
 
 #permissions:
 #  contents: read
@@ -68,8 +64,8 @@ on:
 jobs:
 
   deploy:
-    environment:
-      name: 'staging'
+#    environment:
+#      name: 'staging'
 
     permissions:
       contents: read
@@ -85,14 +81,6 @@ jobs:
       CONFIG_FILE: appsettings.${{ inputs.environment }}.json
       CONFIG_PATH: "."
       CONFIG_SETTINGS: ${{ inputs.config_settings }}
-      DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
-      DATABASE_PORT: ${{ vars.DATABASE_PORT }}
-      DATABASE_NAME: ${{ vars.DATABASE_NAME }}
-      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-      ACCOUNTSERVER_URL: ${{ secrets.ACCOUNTSERVER_URL }}
-      ACCOUNTSERVER_CLIENTSECRET: ${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}
-      BUGREPORTSERVER_URL: ${{ vars.BUGREPORTSERVER_URL }}
 
     steps:
 
@@ -114,16 +102,8 @@ jobs:
           exit 1
         fi
 
-    # Create the config file
-    - name: Create config file
-      if: ${{ inputs.debug }}
-      run: |
-        printf '%s\n' "$CONFIG_TEMPLATE" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
-
     - name: Generate config file from template
-      if: ${{ inputs.gen_config == 'true' }}
       env:
-        CONFIG_TEMPLATE: ${{ vars.CONFIG }}
         CONFIG_SETTINGS: ${{ inputs.config_settings }}
         DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE_PORT: ${{ vars.DATABASE_PORT }}
