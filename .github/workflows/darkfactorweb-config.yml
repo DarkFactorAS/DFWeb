@@ -74,7 +74,7 @@ jobs:
     env:
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
       CONFIG_TEMPLATE: ${{ vars.CONFIG }}
-      CONFIG_PATH: "~/dfweb-config"
+      CONFIG_PATH: "/home/darkfactor/dfweb-config"
       CONFIG_SETTINGS: ${{ inputs.config_settings }}
 
     steps:
