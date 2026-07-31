@@ -54,8 +54,6 @@ on:
         type: boolean
 
   push:
-    environment:
-      name: 'staging' 
 
 #permissions:
 #  contents: read
@@ -63,8 +61,8 @@ on:
 jobs:
 
   deploy:
-#    environment:
-#      name: 'staging'
+    environment:
+      name: ${{ inputs.environment == 'production' ? 'production' : 'staging' }}
 
     permissions:
       contents: read
@@ -75,9 +73,8 @@ jobs:
     runs-on: self-hosted
 
     env:
-      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
+      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment == 'production' ? 'production' : 'staging' }}
       CONFIG_TEMPLATE: ${{ vars.CONFIG }}
-      CONFIG_FILE: appsettings.${{ inputs.environment }}.json
       CONFIG_PATH: "."
       CONFIG_SETTINGS: ${{ inputs.config_settings }}
 
@@ -103,6 +100,7 @@ jobs:
 
     - name: Generate config file from template
       env:
+        CONFIG_FILE: appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
         CONFIG_SETTINGS: ${{ inputs.config_settings }}
         DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE_PORT: ${{ vars.DATABASE_PORT }}
