@@ -2,24 +2,6 @@
 # Build Deploy file for Docker container
 #
 
-#
-# Common variables and secrets
-#   Environment
-#     secrets.DATABASE_PASSWORD
-#     vars.DATABASE_NAME
-#     vars.DATABASE_PORT
-#     vars.EXTERNAL_PORT
-#   Repository:
-#     secrets.DATABASE_USERNAME
-#   Organization:
-#     vars.DATABASE_SERVER
-#
-
-# Account variables and secrets (optional, only if using account server)
-#   Environment
-#     secrets.ACCOUNTSERVER_URL
-#     secrets.ACCOUNTSERVER_CLIENTSECRET
-
 name: General - Deploy Server Docker Container
 
 permissions:
@@ -39,24 +21,12 @@ on:
         required: true
         default: 0
         type: number
-      project_path:
-        required: false
-        default: "."
-        type: string
       project_name:
         required: true
         type: string
-      config_settings:
-        required: false
-        default: ""
-        type: string
-      versionfile:
-        required: false
-        default: ""
-        type: string
       config_path:
         required: false
-        default: ""
+        default: "./"
         type: string
       image_name:
         required: true
@@ -70,14 +40,12 @@ jobs:
 
     # Static variables used in the workflow
     env:
-      TIMESTAMP: ${{ github.sha }}
       INTERNAL_PORT: 8080
       EXTERNAL_PORT: ${{ inputs.external_port }}
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
-      CONFIG: ${{ vars.CONFIG }}
       CONFIG_FILE: appsettings.${{ inputs.environment }}.json
-      CONFIG_PATH: "./"
-
+      CONFIG_PATH: ${{ inputs.config_path }}
+      
     # Required permissions to read packages
     permissions:
       contents: read
@@ -99,14 +67,6 @@ jobs:
           echo "One or more required secrets are not set. Please check the organization and environment secrets."
           exit 1
         fi
-
-    - name: Verify DB secrets
-      if: ${{ !contains(inputs.config_settings, 'skipdbcheck') }}  
-      run: |
-        if [ -z "${{ vars.DATABASE_SERVER }}" ] || [ -z "${{ vars.DATABASE_PORT }}" ] || [ -z "${{ secrets.DATABASE_USERNAME }}" ] || [ -z "${{ secrets.DATABASE_PASSWORD }}" ]; then
-          echo "Database settings are not set. Please check the secrets."
-          exit 1
-        fi
         
     - name: Convert project name to lowercase for Docker name
       id: convert_to_lowercase
@@ -117,48 +77,6 @@ jobs:
 
     - name: Checkout repository
       uses: actions/checkout@v6
-
-    # Replace basic values
-    - name: Replace basic values in config file
-      run: |
-        CONFIG="${CONFIG/DATABASE.SERVER/${{ vars.DATABASE_SERVER }}}"
-        CONFIG="${CONFIG/DATABASE.PORT/${{ vars.DATABASE_PORT }}}"
-        CONFIG="${CONFIG/DATABASE.USERNAME/${{ secrets.DATABASE_USERNAME }}}"
-        CONFIG="${CONFIG/DATABASE.PASSWORD/${{ secrets.DATABASE_PASSWORD }}}"
-        CONFIG="${CONFIG/DATABASE.NAME/${{ vars.DATABASE_NAME }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
-
-    # Replace additional values in config file
-    - name: Replace account server values in config file
-      if: contains(inputs.config_settings, 'accountserver')  
-      run: |
-        CONFIG="${CONFIG/ACCOUNTSERVER.URL/${{ secrets.ACCOUNTSERVER_URL }}}"
-        CONFIG="${CONFIG/ACCOUNTSERVER.CLIENTSECRET/${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
-
-    # Replace additional values in config file
-    - name: Replace bug report server values in config file
-      if: contains(inputs.config_settings, 'bugreportweb')
-      run: |
-        CONFIG="${CONFIG/BUGREPORTSERVER.URL/${{ vars.BUGREPORTSERVER_URL }}}"
-        {
-          echo "CONFIG<<EOF"
-          echo "$CONFIG"
-          echo "EOF"
-        } >> "$GITHUB_ENV"
-
-    # Create the config file
-    - name: Create config file
-      run: |
-        printf '%s\n' "$CONFIG" > "${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}"
 
     # Log in to GitHub Container Registry
     - name: Log in to GitHub Container Registry

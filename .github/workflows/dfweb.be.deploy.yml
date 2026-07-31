@@ -43,6 +43,7 @@ jobs:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
       versionfile: "DFWeb.FR.BootStrap/Program.cs"
+      runner_label: "self-hosted"
     secrets: inherit
 
   staging:
@@ -67,16 +68,15 @@ jobs:
       project_path: "DFAutomatedTests"
       config_path: "DFWeb.BE"
     secrets: inherit
+
   production:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
     needs: [staging-automated-tests]
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-deploy.yml@v1.7
+    uses: ./.github/workflows/infrastructure-server-deploy.yml
     with:
       environment: production
       external_port: 9500
       project_name: "DFWeb.FR.BootStrap"
-      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
-      versionfile: "DFWeb.FR.BootStrap/Program.cs"
-      config_path: "/DFWeb.FR.BootStrap"
+      image_name: ${{ needs.build-docker-image.outputs.docker_image_name }}
     secrets: inherit
