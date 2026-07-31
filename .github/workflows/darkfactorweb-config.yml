@@ -33,6 +33,7 @@ defaults:
 on:
 
   workflow_dispatch:
+  push:
     inputs:
       environment:
         description: 'Environment to deploy to'
