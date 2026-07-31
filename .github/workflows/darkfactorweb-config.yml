@@ -62,7 +62,7 @@ jobs:
 
   deploy:
     environment:
-      name: ${{ inputs.environment == 'production' ? 'production' : 'staging' }}
+      name: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
 
     permissions:
       contents: read
