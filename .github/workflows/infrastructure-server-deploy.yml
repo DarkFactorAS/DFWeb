@@ -26,7 +26,7 @@ on:
         type: string
       config_path:
         required: false
-        default: "./"
+        default: "/var/www"
         type: string
       image_name:
         required: true
@@ -43,9 +43,8 @@ jobs:
       INTERNAL_PORT: 8080
       EXTERNAL_PORT: ${{ inputs.external_port }}
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
-      CONFIG_FILE: appsettings.${{ inputs.environment }}.json
       CONFIG_PATH: ${{ inputs.config_path }}
-      
+
     # Required permissions to read packages
     permissions:
       contents: read
@@ -100,7 +99,7 @@ jobs:
       run: |
         docker run \
           -e ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }} \
-          -v ${{ env.CONFIG_PATH }}/${{ env.CONFIG_FILE }}:/app/Config/${{ env.CONFIG_FILE }} \
+          -v ${{ env.CONFIG_PATH }}:/app/Config \
           --detach \
           --publish ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} \
           --name ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }} \
