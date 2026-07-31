@@ -73,7 +73,7 @@ jobs:
     runs-on: self-hosted
 
     env:
-      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment == 'production' ? 'production' : 'staging' }}
+      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
       CONFIG_TEMPLATE: ${{ vars.CONFIG }}
       CONFIG_PATH: "."
       CONFIG_SETTINGS: ${{ inputs.config_settings }}
