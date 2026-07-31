@@ -53,7 +53,7 @@ on:
         default: false
         type: boolean
 
-  push:
+#  push:
 
 #permissions:
 #  contents: read
