@@ -44,6 +44,7 @@ jobs:
       EXTERNAL_PORT: ${{ inputs.external_port }}
       ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
       CONFIG_PATH: ${{ inputs.config_path }}
+      CONFIG_ENCRYPTIONKEY: ${{ secrets.CONFIG_ENCRYPTIONKEY }}
 
     # Required permissions to read packages
     permissions:
@@ -99,6 +100,7 @@ jobs:
       run: |
         docker run \
           -e ASPNETCORE_ENVIRONMENT=${{ env.ASPNETCORE_ENVIRONMENT }} \
+          -e DFCommonLib_EncryptionKey=${{ env.CONFIG_ENCRYPTIONKEY }} \
           -v ${{ env.CONFIG_PATH }}:/app/Config \
           --detach \
           --publish ${{ env.EXTERNAL_PORT }}:${{ env.INTERNAL_PORT }} \

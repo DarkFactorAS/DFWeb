@@ -76,6 +76,7 @@ jobs:
       CONFIG_TEMPLATE: ${{ vars.CONFIG }}
       CONFIG_PATH: "/home/darkfactor/dfweb-config"
       CONFIG_SETTINGS: ${{ inputs.config_settings }}
+      CONFIG_ENCRYPTIONKEY: ${{ secrets.CONFIG_ENCRYPTIONKEY }}
 
     steps:
 
@@ -101,13 +102,16 @@ jobs:
       env:
         CONFIG_FILE: appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
         CONFIG_SETTINGS: ${{ inputs.config_settings }}
+        DATABASE_MODE: ${{ vars.DATABASE_MODE }}
         DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE_PORT: ${{ vars.DATABASE_PORT }}
         DATABASE_NAME: ${{ vars.DATABASE_NAME }}
         DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
         DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         ACCOUNTSERVER_URL: ${{ secrets.ACCOUNTSERVER_URL }}
+        ACCOUNTSERVER_CLIENTID: ${{ secrets.ACCOUNTSERVER_CLIENTID }}
         ACCOUNTSERVER_CLIENTSECRET: ${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}
+        ACCOUNTSERVER_SCOPE: ${{ vars.ACCOUNTSERVER_SCOPE }}
         BUGREPORTSERVER_URL: ${{ vars.BUGREPORTSERVER_URL }}
       run: |
         python3 - <<'PY'
@@ -131,7 +135,16 @@ jobs:
         config_settings = os.environ.get("CONFIG_SETTINGS", "")
         result = template
 
+        isEncrypted = False
+        config_encryptionkey = os.environ.get("CONFIG_ENCRYPTIONKEY", "").strip()
+        if config_encryptionkey:
+            isEncrypted = True
+        else:
+            print("Warning: CONFIG_ENCRYPTIONKEY is not set. Config will not be encrypted.", file=sys.stderr)
+
         replacements = {
+            "\"CONFIG.ISENCRYPTED\"": str(isEncrypted).lower(),
+            "DATABASE.MODE": os.environ.get("DATABASE_MODE", ""),
             "DATABASE.SERVER": os.environ.get("DATABASE_SERVER", ""),
             "DATABASE.PORT": os.environ.get("DATABASE_PORT", ""),
             "DATABASE.USERNAME": os.environ.get("DATABASE_USERNAME", ""),
@@ -141,7 +154,9 @@ jobs:
 
         if "accountserver" in config_settings:
             replacements["ACCOUNTSERVER.URL"] = os.environ.get("ACCOUNTSERVER_URL", "")
+            replacements["ACCOUNTSERVER.CLIENTID"] = os.environ.get("ACCOUNTSERVER_CLIENTID", "")
             replacements["ACCOUNTSERVER.CLIENTSECRET"] = os.environ.get("ACCOUNTSERVER_CLIENTSECRET", "")
+            replacements["ACCOUNTSERVER.SCOPE"] = os.environ.get("ACCOUNTSERVER_SCOPE", "")
 
         if "bugreportweb" in config_settings:
             replacements["BUGREPORTSERVER.URL"] = os.environ.get("BUGREPORTSERVER_URL", "")
@@ -151,6 +166,7 @@ jobs:
                 result = result.replace(token, value)
 
         unresolved_required = [
+            "CONFIG.ISENCRYPTED",
             "DATABASE.SERVER",
             "DATABASE.PORT",
             "DATABASE.USERNAME",
