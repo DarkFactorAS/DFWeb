@@ -9,7 +9,7 @@
 
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.1" />
-    <PackageReference Include="DarkFactor.Common.Lib" Version="1.7.0" />
+    <PackageReference Include="DarkFactor.Common.Lib" Version="1.7.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DFWeb.BE\DFWeb.BE.csproj" />

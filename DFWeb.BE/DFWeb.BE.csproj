@@ -11,7 +11,7 @@
 
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.1" />
-    <PackageReference Include="DarkFactor.Common.Lib" Version="1.7.0" />
+    <PackageReference Include="DarkFactor.Common.Lib" Version="1.7.1" />
     <PackageReference Include="DarkFactor.AccountClient.Lib" Version="1.2.11" />
   </ItemGroup>
 
