@@ -102,7 +102,7 @@ jobs:
       env:
         CONFIG_FILE: appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
         CONFIG_SETTINGS: ${{ inputs.config_settings }}
-        DATABASE_MODE: ${{ vars.DATABASE_MODE }}
+        DATABASE_SSLMODE: ${{ vars.DATABASE_SSLMODE }}
         DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
         DATABASE_PORT: ${{ vars.DATABASE_PORT }}
         DATABASE_NAME: ${{ vars.DATABASE_NAME }}
@@ -144,7 +144,7 @@ jobs:
 
         replacements = {
             "\"CONFIG.ISENCRYPTED\"": str(isEncrypted).lower(),
-            "DATABASE.MODE": os.environ.get("DATABASE_MODE", ""),
+            "DATABASE.SSLMODE": os.environ.get("DATABASE_SSLMODE", ""),
             "DATABASE.SERVER": os.environ.get("DATABASE_SERVER", ""),
             "DATABASE.PORT": os.environ.get("DATABASE_PORT", ""),
             "DATABASE.USERNAME": os.environ.get("DATABASE_USERNAME", ""),
