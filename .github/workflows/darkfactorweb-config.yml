@@ -153,11 +153,21 @@ jobs:
         }
 
         if "accountserver" in config_settings:
-            replacements["ACCOUNTSERVER.URL"] = os.environ.get("ACCOUNTSERVER_URL", "")
-            replacements["ACCOUNTSERVER.CLIENTID"] = os.environ.get("ACCOUNTSERVER_CLIENTID", "")
-            replacements["ACCOUNTSERVER.CLIENTSECRET"] = os.environ.get("ACCOUNTSERVER_CLIENTSECRET", "")
-            replacements["ACCOUNTSERVER.SCOPE"] = os.environ.get("ACCOUNTSERVER_SCOPE", "")
+            accountserver_env = {
+                "ACCOUNTSERVER_URL": os.environ.get("ACCOUNTSERVER_URL", "").strip(),
+                "ACCOUNTSERVER_CLIENTID": os.environ.get("ACCOUNTSERVER_CLIENTID", "").strip(),
+                "ACCOUNTSERVER_CLIENTSECRET": os.environ.get("ACCOUNTSERVER_CLIENTSECRET", "").strip(),
+                "ACCOUNTSERVER_SCOPE": os.environ.get("ACCOUNTSERVER_SCOPE", "").strip(),
+            }
+            missing_env = [k for k, v in accountserver_env.items() if not v]
+            if missing_env:
+                print(f"Error: missing required accountserver settings: {', '.join(missing_env)}", file=sys.stderr)
+                sys.exit(1)
 
+            replacements["ACCOUNTSERVER.URL"] = accountserver_env["ACCOUNTSERVER_URL"]
+            replacements["ACCOUNTSERVER.CLIENTID"] = accountserver_env["ACCOUNTSERVER_CLIENTID"]
+            replacements["ACCOUNTSERVER.CLIENTSECRET"] = accountserver_env["ACCOUNTSERVER_CLIENTSECRET"]
+            replacements["ACCOUNTSERVER.SCOPE"] = accountserver_env["ACCOUNTSERVER_SCOPE"]
         if "bugreportweb" in config_settings:
             replacements["BUGREPORTSERVER.URL"] = os.environ.get("BUGREPORTSERVER_URL", "")
 
