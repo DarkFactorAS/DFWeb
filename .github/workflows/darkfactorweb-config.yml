@@ -140,7 +140,7 @@ jobs:
         if config_encryptionkey:
             isEncrypted = True
         else:
-            print("Warning: CONFIG_ENCRYPTIONKEY is not set. Config will not be encrypted.", file=sys.stderr)
+            print("Warning: CONFIG_ENCRYPTIONKEY is not set. IsConfigEncrypted will be set to false.", file=sys.stderr)
 
         replacements = {
             "\"CONFIG.ISENCRYPTED\"": str(isEncrypted).lower(),
