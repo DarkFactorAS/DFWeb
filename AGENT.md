@@ -79,7 +79,7 @@ contributors working in this repository.
 
 ## Related Repositories
 
-- [Bots Client](https://github.com/DarkFactorAS/Bots.git)
+- [DFCommonLib](https://github.com/DarkFactorAS/DFCommonLib.git)
 
 ## Contact
 
