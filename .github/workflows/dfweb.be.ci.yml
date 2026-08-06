@@ -10,8 +10,10 @@ permissions:
 
 env:
   IMAGE_NAME: darkfactorwebimage
+  RUNNER_LABEL: ${{ vars.ACTION_RUNNER_LABEL }} || 'ubuntu-latest'
 
 jobs:
+
   build:
     name: Build Docker Image
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
@@ -19,12 +21,16 @@ jobs:
     with:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
+      runner_label: ${{ env.RUNNER_LABEL }}
     secrets: inherit
 
   unit-tests:
     name: Run Unit Tests
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
+    runs-on: ${{ env.RUNNER_LABEL }}
+
+    # Timeout for the job
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v6
