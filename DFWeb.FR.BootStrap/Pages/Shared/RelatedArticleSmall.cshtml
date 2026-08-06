@@ -17,7 +17,7 @@
         <i class="fas fa-link"></i> Related Articles
     </h3>
 
-    @if (!Model.Any())
+    @if (Model == null || !Model.Any())
     {
         <div class="alert alert-info" role="alert">
             <i class="fas fa-info-circle"></i> No related articles available.
