@@ -13,7 +13,7 @@ jobs:
   unit-tests:
     name: Run Unit Tests
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ${{ vars.ACTION_RUNNER_LABEL }} || 'ubuntu-latest'
+    runs-on:  ${{ vars.ACTION_RUNNER_LABEL != '' && vars.ACTION_RUNNER_LABEL || 'ubuntu-latest' }}
 
     # Timeout for the job
     timeout-minutes: 5

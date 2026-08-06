@@ -16,6 +16,6 @@ jobs:
     with:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
-      runner_label: ${{ vars.ACTION_RUNNER_LABEL }} || 'ubuntu-latest'
+      runner_label: ${{ vars.ACTION_RUNNER_LABEL != '' && vars.ACTION_RUNNER_LABEL || 'ubuntu-latest' }}
     secrets: inherit
 

@@ -42,7 +42,7 @@ jobs:
   build:
 
     # Timeout for the job
-    timeout-minutes: 15
+    timeout-minutes: 5
 
     # Static variables used in the workflow
     env:
