@@ -32,6 +32,11 @@ on:
         required: false
         default: "Dockerfile"
         type: string
+      runner_label:
+        type: string
+        description: "The GitHub Actions runner label used for runs-on."
+        required: false
+        default: "self-hosted"
 
 jobs:
   build:
@@ -44,7 +49,7 @@ jobs:
       TIMESTAMP: ${{ github.sha }}
      
     # To build on the local server
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner_label }}
 
     steps:
 
@@ -52,11 +57,8 @@ jobs:
     # Verify required secrets and variables are set
     #
     - name: Verify secrets and variables are set
-      env:
-        NUGET_USERNAME: ${{ secrets.NUGET_USERNAME }}
-        NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
       run: |
-        if [ -z "${NUGET_USERNAME:-}" ] || [ -z "${NUGET_TOKEN:-}" ]; then
+        if [ -z "${{ secrets.NUGET_USERNAME }}" ] || [ -z "${{ secrets.NUGET_TOKEN }}" ]; then
           echo "One or more required secrets are not set. Please check the organization secrets."
           exit 1
         fi
@@ -89,4 +91,3 @@ jobs:
           --tag ${{ steps.convert_to_lowercase.outputs.DOCKER_NAME }}-ci-image:${{ env.TIMESTAMP }} \
           --secret id=nuget_username,env=NUGET_USERNAME \
           --secret id=nuget_token,env=NUGET_TOKEN
-
