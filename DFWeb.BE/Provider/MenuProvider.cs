@@ -27,6 +27,10 @@ namespace DFWeb.BE.Provider
 
         public int GetDefaultId()
         {
+            if ( menuItems == null || menuItems.Count == 0 )
+            {
+                return 0;
+            }
             return menuItems[0].ID;
         }
 
