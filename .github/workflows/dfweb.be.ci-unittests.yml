@@ -8,9 +8,6 @@ on:
 permissions:
   contents: read
 
-env:
-  IMAGE_NAME: darkfactorwebimage
-
 jobs:
 
   unit-tests:

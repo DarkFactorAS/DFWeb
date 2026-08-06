@@ -12,7 +12,7 @@ jobs:
   build:
     name: Build Docker Image
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-server-ci.yml@v1.7
+    uses: ./.github/workflows/infrastructure-server-ci.yml
     with:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
