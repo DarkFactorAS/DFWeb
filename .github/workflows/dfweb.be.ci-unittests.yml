@@ -1,0 +1,42 @@
+name: DFWeb BootStrap - CI Unit Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  unit-tests:
+    name: Run Unit Tests
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on:  ${{ vars.ACTION_RUNNER_LABEL != '' && vars.ACTION_RUNNER_LABEL || 'ubuntu-latest' }}
+
+    # Timeout for the job
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Configure DarkFactorAS NuGet source for tests
+        run: dotnet nuget update source DarkFactorAS --username ${{ vars.NUGET_USERNAME }} --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --configfile "DFWeb.BE/NuGet.config"
+
+      - name: Restore backend unit tests
+        run: dotnet restore DFWeb.BE.Tests/DFWeb.BE.Tests.csproj --configfile DFWeb.BE/NuGet.config
+
+      - name: Restore frontend unit tests
+        run: dotnet restore DFWeb.FR.Tests/DFWeb.FR.Tests.csproj --configfile DFWeb.BE/NuGet.config
+
+      - name: Run backend unit tests
+        run: dotnet test DFWeb.BE.Tests/DFWeb.BE.Tests.csproj --configuration Release --no-restore
+
+      - name: Run frontend unit tests
+        run: dotnet test DFWeb.FR.Tests/DFWeb.FR.Tests.csproj --configuration Release --no-restore
