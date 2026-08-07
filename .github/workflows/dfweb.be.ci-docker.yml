@@ -1,0 +1,21 @@
+name: DFWeb BootStrap - CI Docker Container
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Docker Image
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    uses: ./.github/workflows/infrastructure-server-ci-docker.yml
+    with:
+      project_name: "DFWeb.FR.BootStrap"
+      dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
+      runner_label: ${{ vars.ACTION_RUNNER_LABEL != '' && vars.ACTION_RUNNER_LABEL || 'ubuntu-latest' }}
+    secrets: inherit
+
