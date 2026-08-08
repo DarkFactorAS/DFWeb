@@ -1,4 +1,4 @@
-name: DFWeb BootStrap - CI Unit Tests
+name: DarkFactor Web - CI .Net Unit Tests
 
 on:
   push:

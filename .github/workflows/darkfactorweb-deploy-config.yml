@@ -21,7 +21,7 @@
 #     secrets.ACCOUNTSERVER_URL
 #     secrets.ACCOUNTSERVER_CLIENTSECRET
 
-name: DFWeb - Create Config
+name: DarkFactor Web - Deploy Config
 
 permissions:
   contents: read
