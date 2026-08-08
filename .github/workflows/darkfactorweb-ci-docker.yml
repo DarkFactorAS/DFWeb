@@ -1,4 +1,4 @@
-name: DFWeb BootStrap - CI Docker Container
+name: DarkFactor Web - CI Docker Container
 
 on:
   push:
