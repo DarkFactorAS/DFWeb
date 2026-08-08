@@ -5,9 +5,6 @@ WORKDIR /app
 # Copy everything else
 COPY . .
 
-# Delete cleartext configs
-RUN rm -f ./DFWeb.FR.BootStrap/Config/appsettings.*.cleartext.json
-
 # Restore dependencies
 RUN --mount=type=secret,id=nuget_username,env=NUGET_USERNAME,required=true \
     --mount=type=secret,id=nuget_token,env=NUGET_TOKEN,required=true \
