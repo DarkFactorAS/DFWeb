@@ -47,6 +47,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=acceptance
       - ASPNETCORE_URLS=http://+:80
+      - DFWebAcceptance_EncryptionKey=${DFWebAcceptance_ENCRYPTIONKEY:?DFWebAcceptance_ENCRYPTIONKEY must be set}
     ports:
       - "4005:80"
     networks:
