@@ -22,11 +22,10 @@ on:
   push:
     paths:
       - .github/workflows/darkfactorweb-deploy-config.yml
-      - .github/workflows/infrastructure-server-deploy-config.yml
 
 jobs:
   deploy:
-    uses: ./.github/workflows/infrastructure-server-deploy-config.yml
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-deploy-config.yml@v1.8
     with:
       environment: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
       config_path: "~/dfweb-config"
