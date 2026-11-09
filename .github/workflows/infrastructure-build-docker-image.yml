@@ -48,11 +48,6 @@ on:
         required: false
         default: ""
         type: string
-      runner_label:
-        type: string
-        description: "The GitHub Actions runner label used for runs-on."
-        required: false
-        default: ubuntu-latest
     outputs:
       docker_image_name:
         description: "Fully-qualified image name pushed to GHCR"
@@ -70,8 +65,7 @@ jobs:
     env:
       TIMESTAMP: ${{ github.sha }}
      
-    # To be able to deploy on the local server
-    runs-on: ${{ inputs.runner_label }}
+    runs-on: ubuntu-latest
 
     steps:
 

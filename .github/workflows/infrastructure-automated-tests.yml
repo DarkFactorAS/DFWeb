@@ -25,11 +25,6 @@ on:
         required: false
         default: ""
         type: string
-      runner_label:
-        type: string
-        description: "The GitHub Actions runner label used for runs-on."
-        required: false
-        default: ubuntu-latest
 jobs:
 
   automated-tests:
@@ -39,7 +34,7 @@ jobs:
 
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Run Staging Playwright Tests
-    runs-on: ${{ inputs.runner_label }}
+    runs-on: ubuntu-latest
 
     env:
       DFWEB_BASE_URL: ${{ vars.DFWEB_BASE_URL }}
