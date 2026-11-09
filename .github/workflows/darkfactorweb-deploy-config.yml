@@ -29,7 +29,7 @@ jobs:
     uses: ./.github/workflows/infrastructure-server-deploy-config.yml
     with:
       environment: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
-      config_path: "/home/darkfactor/dfweb-config"
+      config_path: "~/dfweb-config"
       config_settings: "accountserver,bugreportweb"
       config_template_path: "DFWeb.FR.BootStrap/Config"
     secrets: inherit
