@@ -38,7 +38,7 @@ jobs:
   build-docker-image:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Build Docker Image
-    uses: ./.github/workflows/infrastructure-build-docker-image.yml
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-docker-build-image.yml@v1.8
     with:
       project_name: "DFWeb.FR.BootStrap"
       dockerfile: "DFWeb.FR.BootStrap/Dockerfile"
@@ -49,7 +49,7 @@ jobs:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     name: Deploy to Staging
     needs: [build-docker-image]
-    uses: ./.github/workflows/infrastructure-server-deploy.yml
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-docker-deploy.yml@v1.8
     with:
       environment: staging
       external_port: 8500
@@ -74,7 +74,7 @@ jobs:
     if: github.event.pull_request.merged == true || github.event.inputs.environment == 'production' || github.event_name == 'release'
     name: Deploy to Production
     needs: [build-docker-image, staging-automated-tests]
-    uses: ./.github/workflows/infrastructure-server-deploy.yml
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-docker-deploy.yml@v1.8
     with:
       environment: production
       external_port: 9500

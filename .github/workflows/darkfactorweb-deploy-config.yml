@@ -25,7 +25,7 @@ on:
 
 jobs:
   deploy:
-    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-deploy-config.yml@v1.8
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-config-deploy.yml@v1.8
     with:
       environment: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
       config_path: "/home/darkfactor/dfweb-config"
