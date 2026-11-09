@@ -32,11 +32,6 @@ on:
         required: false
         default: "Dockerfile"
         type: string
-      runner_label:
-        type: string
-        description: "The GitHub Actions runner label used for runs-on."
-        required: false
-        default: "self-hosted"
 
 jobs:
   build:
@@ -49,7 +44,7 @@ jobs:
       TIMESTAMP: ${{ github.sha }}
      
     # To build on the local server
-    runs-on: ${{ inputs.runner_label }}
+    runs-on: ubuntu-latest
 
     steps:
 

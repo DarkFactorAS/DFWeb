@@ -1,37 +1,13 @@
 #
-# Build Deploy file for Docker container
-# Change the variables in this section to match your project
+# Deploy the DarkFactor Web configuration.
 #
-
-#
-# Common variables and secrets
-#   Environment
-#     secrets.DATABASE_PASSWORD
-#     vars.DATABASE_NAME
-#     vars.DATABASE_PORT
-#     vars.EXTERNAL_PORT
-#   Repository:
-#     secrets.DATABASE_USERNAME
-#   Organization:
-#     vars.DATABASE_SERVER
-#
-
-# Account variables and secrets (optional, only if using account server)
-#   Environment
-#     secrets.ACCOUNTSERVER_URL
-#     secrets.ACCOUNTSERVER_CLIENTSECRET
 
 name: DarkFactor Web - Deploy Config
 
 permissions:
   contents: read
 
-defaults:
-  run:
-    working-directory: .
-
 on:
-
   workflow_dispatch:
     inputs:
       environment:
@@ -48,155 +24,11 @@ on:
       - .github/workflows/darkfactorweb-deploy-config.yml
 
 jobs:
-
   deploy:
-    environment:
-      name: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
-
-    permissions:
-      contents: read
-
-    # Timeout for the job
-    timeout-minutes: 5
-
-    runs-on: self-hosted
-
-    env:
-      ASPNETCORE_ENVIRONMENT: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
-      CONFIG_PATH: "/home/darkfactor/dfweb-config"
-      CONFIG_SETTINGS: "accountserver,bugreportweb"
-      CONFIG_ENCRYPTIONKEY: ${{ secrets.CONFIG_ENCRYPTIONKEY }}
-      CONFIG_TEMPLATE_PATH: "DFWeb.FR.BootStrap/Config"
-
-    steps:
-
-    - name: Checkout repository
-      uses: actions/checkout@v6
-
-    - name: Read config template into CONFIG_TEMPLATE 
-      env:
-        CONFIG_FILE: appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
-      run: |
-        if [ ! -f "${{ env.CONFIG_TEMPLATE_PATH }}/${{ env.CONFIG_FILE }}" ]; then
-          echo "Config template file does not exist: ${{ env.CONFIG_TEMPLATE_PATH }}/${{ env.CONFIG_FILE }}"
-          exit 1
-        fi
-        export CONFIG_TEMPLATE=$(cat "${{ env.CONFIG_TEMPLATE_PATH }}/${{ env.CONFIG_FILE }}")
-        echo "CONFIG_TEMPLATE<<EOF" >> $GITHUB_ENV
-        echo "$CONFIG_TEMPLATE" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV
-
-    - name: Verify Config template
-      run: |
-        if [ -z "${{ env.CONFIG_TEMPLATE }}" ]; then
-          echo "Config template is not set. Please check the repository and environment variables."
-          exit 1
-        fi
-
-    - name: Verify DB secrets
-      run: |
-        if [ -z "${{ vars.DATABASE_SERVER }}" ] || [ -z "${{ vars.DATABASE_PORT }}" ] || [ -z "${{ secrets.DATABASE_USERNAME }}" ] || [ -z "${{ secrets.DATABASE_PASSWORD }}" ]; then
-          echo "Database settings are not set. Please check the secrets."
-          exit 1
-        fi
-
-    - name: Generate config file from template
-      env:
-        CONFIG_FILE: appsettings.${{ env.ASPNETCORE_ENVIRONMENT }}.json
-        CONFIG_SETTINGS: ${{ env.CONFIG_SETTINGS }}
-        DATABASE_SSLMODE: ${{ vars.DATABASE_SSLMODE }}
-        DATABASE_SERVER: ${{ vars.DATABASE_SERVER }}
-        DATABASE_PORT: ${{ vars.DATABASE_PORT }}
-        DATABASE_NAME: ${{ vars.DATABASE_NAME }}
-        DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        ACCOUNTSERVER_URL: ${{ vars.ACCOUNTSERVER_URL }}
-        ACCOUNTSERVER_CLIENTID: ${{ secrets.ACCOUNTSERVER_CLIENTID }}
-        ACCOUNTSERVER_CLIENTSECRET: ${{ secrets.ACCOUNTSERVER_CLIENTSECRET }}
-        ACCOUNTSERVER_SCOPE: ${{ vars.ACCOUNTSERVER_SCOPE }}
-        BUGREPORTSERVER_URL: ${{ vars.BUGREPORTSERVER_URL }}
-      run: |
-        python3 - <<'PY'
-        import ipaddress
-        import json
-        import os
-        import pathlib
-        import re
-        import sys
-
-        template = os.environ.get("CONFIG_TEMPLATE", "")
-        if not template.strip():
-            print("CONFIG template is empty. Set repository/environment variable 'CONFIG'.", file=sys.stderr)
-
-        config_settings = os.environ.get("CONFIG_SETTINGS", "")
-        result = template
-
-        isEncrypted = False
-        config_encryptionkey = os.environ.get("CONFIG_ENCRYPTIONKEY", "").strip()
-        if config_encryptionkey:
-            isEncrypted = True
-        else:
-            print("Warning: CONFIG_ENCRYPTIONKEY is not set. IsConfigEncrypted will be set to false.", file=sys.stderr)
-
-        replacements = {
-            "\"CONFIG.ISENCRYPTED\"": str(isEncrypted).lower(),
-            "DATABASE.SSLMODE": os.environ.get("DATABASE_SSLMODE", ""),
-            "DATABASE.SERVER": os.environ.get("DATABASE_SERVER", ""),
-            "DATABASE.PORT": os.environ.get("DATABASE_PORT", ""),
-            "DATABASE.USERNAME": os.environ.get("DATABASE_USERNAME", ""),
-            "DATABASE.PASSWORD": os.environ.get("DATABASE_PASSWORD", ""),
-            "DATABASE.NAME": os.environ.get("DATABASE_NAME", ""),
-        }
-
-        if "accountserver" in config_settings:
-            accountserver_env = {
-                "ACCOUNTSERVER_URL": os.environ.get("ACCOUNTSERVER_URL", "").strip(),
-                "ACCOUNTSERVER_CLIENTID": os.environ.get("ACCOUNTSERVER_CLIENTID", "").strip(),
-                "ACCOUNTSERVER_CLIENTSECRET": os.environ.get("ACCOUNTSERVER_CLIENTSECRET", "").strip(),
-                "ACCOUNTSERVER_SCOPE": os.environ.get("ACCOUNTSERVER_SCOPE", "").strip(),
-            }
-            missing_env = [k for k, v in accountserver_env.items() if not v]
-            if missing_env:
-                print(f"Error: missing required accountserver settings: {', '.join(missing_env)}", file=sys.stderr)
-                sys.exit(1)
-
-            replacements["ACCOUNTSERVER.URL"] = accountserver_env["ACCOUNTSERVER_URL"]
-            replacements["ACCOUNTSERVER.CLIENTID"] = accountserver_env["ACCOUNTSERVER_CLIENTID"]
-            replacements["ACCOUNTSERVER.CLIENTSECRET"] = accountserver_env["ACCOUNTSERVER_CLIENTSECRET"]
-            replacements["ACCOUNTSERVER.SCOPE"] = accountserver_env["ACCOUNTSERVER_SCOPE"]
-        if "bugreportweb" in config_settings:
-            replacements["BUGREPORTSERVER.URL"] = os.environ.get("BUGREPORTSERVER_URL", "")
-
-        for token, value in replacements.items():
-            if value:
-                result = result.replace(token, value)
-
-        unresolved_required = [
-            "CONFIG.ISENCRYPTED",
-            "DATABASE.SERVER",
-            "DATABASE.PORT",
-            "DATABASE.USERNAME",
-            "DATABASE.PASSWORD",
-            "DATABASE.NAME",
-        ]
-        missing = [token for token in unresolved_required if token in result]
-        if missing:
-          print(f"Warning: unresolved placeholders in CONFIG: {', '.join(missing)}", file=sys.stderr)
-
-        # Validate that generated output is valid JSON.
-        try:
-            json.loads(result)
-        except json.JSONDecodeError as exc:
-          print(f"Warning: generated CONFIG is not valid JSON: {exc}", file=sys.stderr)
-
-        output_path = pathlib.Path(os.environ["CONFIG_PATH"]) / os.environ["CONFIG_FILE"]
-        output_path.write_text(result + "\n", encoding="utf-8")
-
-        with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
-            env_file.write("CONFIG<<EOF\n")
-            env_file.write(result)
-            env_file.write("\nEOF\n")
-
-        print(f"Wrote config file: {output_path}")
-        PY
-
+    uses: DarkFactorAS/Infrastructure/.github/workflows/infrastructure-config-deploy.yml@v1.8
+    with:
+      environment: ${{ inputs.environment == 'production' && 'production' || 'staging' }}
+      config_path: "/home/darkfactor/dfweb-config"
+      config_settings: "accountserver,bugreportweb"
+      config_template_path: "DFWeb.FR.BootStrap/Config"
+    secrets: inherit
