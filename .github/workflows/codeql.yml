@@ -63,8 +63,15 @@ jobs:
     # Autobuild attempts to build any compiled languages (C/C++, C#, Go, Java, or Swift).
     # If this step fails, then you should remove it and run the build manually (see below)
 
-    - name: NuGet update
-      run: dotnet nuget add source --username ${{ vars.NUGET_USERNAME }} --password ${{ secrets.NUGET_TOKEN }} --store-password-in-clear-text --name DarkFactorAS "https://nuget.pkg.github.com/DarkFactorAS/index.json"
+    - name: Configure DarkFactorAS NuGet source
+      env:
+        NUGET_USERNAME: ${{ vars.NUGET_USERNAME }}
+        NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      run: |
+        set -euo pipefail
+        for config in DFWeb.BE/NuGet.config DFWeb.FR.Shared/Nuget.config DFWeb.FR.BootStrap/NuGet.config; do
+          dotnet nuget update source DarkFactorAS --username "$NUGET_USERNAME" --password "$NUGET_TOKEN" --store-password-in-clear-text --configfile "$config"
+        done
     
     - name: Autobuild
       uses: github/codeql-action/autobuild@v4
